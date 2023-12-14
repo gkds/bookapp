@@ -1,0 +1,13 @@
+<h2>Your cart</h2>
+<div  *ngIf="getCart().length > 0">
+   
+    <ng-container *ngFor="let book of getCart()">
+    
+        <P class="my-4 text-sm border">{{ book.name | titlecase}} {{book.price | currency:'GBP'}}   
+           <button class="p-4 bg-purple-300 border rounded" (click)="removeFromCart(book)">Remove</button>
+       </P>
+    </ng-container>
+
+</div>
+
+

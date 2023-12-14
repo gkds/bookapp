@@ -1,0 +1,6 @@
+<li class="m-1 flex rounded-xl border h-40">  
+    <img [src]="book.image" [alt]="book.name" width="100" class="m-auto rounded-sm"> 
+      <div class="m-auto">  {{ book.name | titlecase}} by <br/><i>{{ book.author }}</i><br> {{book.price | currency:'GBP'}}
+        <br><button class="bg-yellow-500 rounded border text-sm text-white cursor-pointer" (click)="addToCart()">Add to cart</button>
+     </div>
+</li>
