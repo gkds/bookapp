@@ -104,7 +104,7 @@ export class OrderService {
     const price = (value: number) => this.currency.transform(value, 'GBP') ?? '';
 
     doc.setFontSize(20);
-    doc.text('Book shop', 14, 20);
+    doc.text('GDS BOOK STORE', 14, 20);
     doc.setFontSize(14);
     doc.text('Invoice', 196, 20, { align: 'right' });
 

@@ -1,7 +1,7 @@
-<nav class="flex justify-between p-4 bg-purple-900 text-white">
-  <div>
-    <a routerLink="">Book shop</a>
-  </div>
+<nav class="flex flex-wrap items-center justify-between gap-2 px-4 py-2 bg-purple-900 text-white">
+  <a routerLink="" class="shrink-0" aria-label="GDS Book Store, home">
+    <img src="assets/logo.svg" alt="GDS BOOK STORE" class="h-12 w-auto">
+  </a>
   <div>
     <a class="mx-4" routerLink="cart">My Cart</a>
     <ng-container *ngIf="user$ | async as user; else loggedOut">
