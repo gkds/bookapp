@@ -1,0 +1,33 @@
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced. * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * Delete the template below * * * * * * * * * * -->
+<!-- * * * * * * * to get started with your project! * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+
+
+<nav class="flex justify-between p-4 bg-purple-900 text-white ">
+<div>
+  <a routerLink="">Book shop</a>
+
+</div> 
+<div>
+  <a class="mx-4" routerLink="cart">My Cart</a>
+  <ng-container *ngIf="!isAuthenticated()">
+    <a class="mx-4" routerLink="/login"> Login</a>
+    <a class="mx-4" routerLink="/register"> Register</a>
+</ng-container>
+<ng-container *ngIf="isAuthenticated()">
+  Hello {{ currentUser.displayName }} Last login:{{ currentUser.metadata.lastSignInTime}}
+    <button (click)="logout()" class="mx-4">Logout</button>
+</ng-container>
+
+</div>
+</nav>
+
+<div class="p-4">
+
+<router-outlet></router-outlet>
+</div>
