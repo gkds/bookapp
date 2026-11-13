@@ -1,0 +1,41 @@
+<h2 class="text-xl mb-4">My orders</h2>
+
+<div *ngIf="error" role="alert" class="mb-4 p-2 bg-red-300 text-red-800 rounded">{{ error }}</div>
+
+<p *ngIf="isLoading" class="my-4 text-sm">Loading your orders...</p>
+
+<ng-container *ngIf="!isLoading && !error">
+  <div *ngIf="orders.length > 0; else noOrders" class="overflow-x-auto">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-purple-900 text-white text-left">
+          <th scope="col" class="p-3">Order</th>
+          <th scope="col" class="p-3">Date</th>
+          <th scope="col" class="p-3 text-center">Items</th>
+          <th scope="col" class="p-3 text-right">Total</th>
+          <th scope="col" class="p-3"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders" class="border-b">
+          <td class="p-3">
+            <a [routerLink]="['/orders', order.id]" class="text-purple-700 underline">{{ order.id }}</a>
+          </td>
+          <td class="p-3">{{ order.date | date: 'medium' }}</td>
+          <td class="p-3 text-center">{{ itemCount(order) }}</td>
+          <td class="p-3 text-right">{{ order.total | currency: 'GBP' }}</td>
+          <td class="p-3 text-right whitespace-nowrap">
+            <button type="button" (click)="downloadInvoice(order)" [disabled]="downloadingId === order.id"
+              class="px-3 py-1 bg-purple-300 border rounded disabled:opacity-50">
+              {{ downloadingId === order.id ? 'Generating...' : 'Invoice (PDF)' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-container>
+
+<ng-template #noOrders>
+  <p class="my-4 text-sm">You have not placed any order yet. <a routerLink="" class="text-purple-700 underline">Browse the catalog</a></p>
+</ng-template>

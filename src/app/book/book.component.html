@@ -1,0 +1,28 @@
+<article class="h-full flex flex-col rounded-xl border bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+  <!-- Fixed 2:3 cover area: every cover is centred and scaled to fit,
+       whatever its original size, so all cards line up. -->
+  <div class="aspect-[2/3] bg-gray-100 flex items-center justify-center p-3 sm:p-4">
+    <img *ngIf="!imageFailed; else noCover" [src]="book.image" [alt]="'Cover of ' + book.name"
+      loading="lazy" (error)="imageFailed = true"
+      class="h-full w-full object-contain drop-shadow-md">
+    <ng-template #noCover>
+      <div class="h-full w-full flex items-center justify-center rounded bg-purple-100 text-purple-900 text-sm text-center p-2">
+        {{ book.name }}
+      </div>
+    </ng-template>
+  </div>
+
+  <div class="flex flex-col flex-1 p-3 sm:p-4 gap-1">
+    <!-- Always two lines high, so authors and prices line up across cards. -->
+    <h3 class="text-sm sm:text-base font-semibold leading-snug line-clamp-2 min-h-[2.5rem] sm:min-h-[2.75rem]"
+      [title]="book.name">{{ book.name }}</h3>
+    <p class="text-xs sm:text-sm italic text-gray-600 line-clamp-1">{{ book.author }}</p>
+    <div class="mt-auto pt-3 flex flex-wrap items-center justify-between gap-2">
+      <span class="text-base sm:text-lg font-bold text-purple-900">{{ book.price | currency: 'GBP' }}</span>
+      <button type="button" (click)="addToCart()"
+        class="w-full sm:w-auto px-3 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium">
+        Add to cart
+      </button>
+    </div>
+  </div>
+</article>
