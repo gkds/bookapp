@@ -7,6 +7,7 @@
     "start:emulators": "ng serve --configuration emulators",
     "emulators": "firebase emulators:start --only auth,firestore",
     "deploy:rules": "firebase deploy --only firestore:rules",
+    "deploy": "ng build && firebase deploy --only hosting,firestore:rules",
     "seed:books": "node scripts/seed-books.mjs",
     "seed:emulators": "node scripts/seed-books.mjs --emulator",
     "build": "ng build",

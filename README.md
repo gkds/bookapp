@@ -31,6 +31,16 @@ npm run seed:emulators    # load data/books.json into the emulator (each time th
 npm run start:emulators   # app on http://localhost:4200 wired to the emulators
 ```
 
+## Deploy to Firebase Hosting
+
+```bash
+npx firebase login   # once per machine
+npm run deploy       # production build + Hosting + Firestore rules
+```
+
+The site is then served at https://bookapp-63999.web.app (and https://bookapp-63999.firebaseapp.com).
+Load or update the catalog separately with `npm run seed:books` (see above).
+
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
