@@ -1,12 +1,48 @@
-<h2>Your cart</h2>
+<h2 class="text-xl mb-4">Your cart</h2>
+
 <div *ngIf="getCart().length > 0; else emptyCart">
-  <p *ngFor="let item of getCart()" class="my-4 text-sm border">
-    {{ item.book.name | titlecase }} × {{ item.quantity }}
-    {{ item.book.price * item.quantity | currency: 'GBP' }}
-    <button class="p-4 bg-purple-300 border rounded" (click)="removeFromCart(item.book)">Remove</button>
-  </p>
-  <p class="font-bold">Total: {{ total() | currency: 'GBP' }}</p>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-purple-900 text-white text-left">
+          <th scope="col" class="p-3">Book</th>
+          <th scope="col" class="p-3">Author</th>
+          <th scope="col" class="p-3 text-right">Unit price</th>
+          <th scope="col" class="p-3 text-center">Quantity</th>
+          <th scope="col" class="p-3 text-right">Subtotal</th>
+          <th scope="col" class="p-3"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of getCart()" class="border-b">
+          <td class="p-3">{{ item.book.name | titlecase }}</td>
+          <td class="p-3 italic">{{ item.book.author }}</td>
+          <td class="p-3 text-right">{{ item.book.price | currency: 'GBP' }}</td>
+          <td class="p-3 text-center">{{ item.quantity }}</td>
+          <td class="p-3 text-right">{{ item.book.price * item.quantity | currency: 'GBP' }}</td>
+          <td class="p-3 text-right">
+            <button class="px-3 py-1 bg-purple-300 border rounded" (click)="removeFromCart(item.book)">Remove</button>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="bg-purple-100 font-bold">
+          <td class="p-3" colspan="4">Total</td>
+          <td class="p-3 text-right">{{ total() | currency: 'GBP' }}</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="mt-6 flex justify-end">
+    <button (click)="placeOrder()"
+      class="px-6 py-3 bg-purple-700 text-white rounded hover:bg-purple-900">
+      Place order
+    </button>
+  </div>
 </div>
+
 <ng-template #emptyCart>
   <p class="my-4 text-sm">Your cart is empty.</p>
 </ng-template>

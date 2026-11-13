@@ -5,11 +5,13 @@ import { BookcatalogComponent } from './bookcatalog/bookcatalog.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
+import { OrderConfirmationComponent } from './order-confirmation/order-confirmation.component';
 
 
 const routes: Routes = [
   { path:'', component: BookcatalogComponent},
   { path:'cart', component: CartComponent, canActivate:[AuthGuard]},
+  { path:'order-confirmation', component: OrderConfirmationComponent, canActivate:[AuthGuard]},
   { path:'login', component: LoginComponent},
   { path:'register', component: RegisterComponent},
 ];

@@ -25,7 +25,15 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "core-js",
+              "dompurify",
+              "html2canvas",
+              "jspdf-autotable",
+              "raf",
+              "rgbcolor"
+            ]
           },
           "configurations": {
             "production": {

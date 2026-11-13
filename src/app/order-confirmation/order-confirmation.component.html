@@ -1,0 +1,47 @@
+<div *ngIf="order; else noOrder" class="max-w-3xl m-auto">
+  <div class="p-4 mb-6 rounded bg-green-100 text-green-900" role="status">
+    <h2 class="text-xl font-bold">Thank you for your order!</h2>
+    <p class="text-sm">Order <strong>{{ order.id }}</strong> placed on {{ order.date | date: 'medium' }}.</p>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-purple-900 text-white text-left">
+          <th scope="col" class="p-3">Book</th>
+          <th scope="col" class="p-3 text-right">Unit price</th>
+          <th scope="col" class="p-3 text-center">Quantity</th>
+          <th scope="col" class="p-3 text-right">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let line of order.lines" class="border-b">
+          <td class="p-3">{{ line.name | titlecase }} <span class="italic">by {{ line.author }}</span></td>
+          <td class="p-3 text-right">{{ line.unitPrice | currency: 'GBP' }}</td>
+          <td class="p-3 text-center">{{ line.quantity }}</td>
+          <td class="p-3 text-right">{{ line.unitPrice * line.quantity | currency: 'GBP' }}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="bg-purple-100 font-bold">
+          <td class="p-3" colspan="3">Total</td>
+          <td class="p-3 text-right">{{ order.total | currency: 'GBP' }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div *ngIf="error" role="alert" class="mt-4 p-2 bg-red-300 text-red-800 rounded">{{ error }}</div>
+
+  <div class="mt-6 flex justify-between items-center">
+    <a routerLink="" class="text-purple-700 underline">Continue shopping</a>
+    <button (click)="downloadInvoice()" [disabled]="isGenerating"
+      class="px-6 py-3 bg-purple-700 text-white rounded hover:bg-purple-900 disabled:opacity-50">
+      {{ isGenerating ? 'Generating...' : 'Download invoice (PDF)' }}
+    </button>
+  </div>
+</div>
+
+<ng-template #noOrder>
+  <p class="my-4 text-sm">No recent order found. <a routerLink="/cart" class="text-purple-700 underline">Back to your cart</a></p>
+</ng-template>

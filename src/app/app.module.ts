@@ -8,13 +8,15 @@ import { BookcatalogComponent } from './bookcatalog/bookcatalog.component';
 import { FormsModule } from '@angular/forms';
 import { BookComponent } from './book/book.component';
 import { CartComponent } from './cart/cart.component';
+import { OrderConfirmationComponent } from './order-confirmation/order-confirmation.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     BookcatalogComponent,
     BookComponent,
-    CartComponent
+    CartComponent,
+    OrderConfirmationComponent
   ],
   imports: [
     BrowserModule,
