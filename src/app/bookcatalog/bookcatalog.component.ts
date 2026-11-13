@@ -24,8 +24,9 @@ export class BookcatalogComponent implements OnInit {
     this.error = null;
     try {
       this.catalog = await this.bookService.getBooks();
-    } catch {
-      this.error = 'The catalog could not be loaded.';
+    } catch (error) {
+      console.error('Catalog load failed', error);
+      this.error = this.describe(error);
     } finally {
       this.isLoading = false;
     }
@@ -33,6 +34,18 @@ export class BookcatalogComponent implements OnInit {
 
   addToCart(book: Book): void {
     this.cartService.addToCart(book);
+  }
+
+  private describe(error: unknown): string {
+    const code = (error as { code?: string })?.code;
+    switch (code) {
+      case 'permission-denied':
+        return 'The catalog could not be loaded: access refused by the Firestore security rules (deploy them with `npm run deploy:rules`).';
+      case 'unavailable':
+        return 'The catalog could not be loaded: Firestore is unreachable (check your connection, or start the emulators with `npm run emulators`).';
+      default:
+        return `The catalog could not be loaded${code ? ` (${code})` : ''}.`;
+    }
   }
 
   trackById(_: number, book: Book): string {
