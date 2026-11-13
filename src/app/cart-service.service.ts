@@ -5,6 +5,9 @@ import { AuthService } from './auth/authService';
 import { db } from './firebase';
 import { Book } from './types/book';
 
+/** Highest quantity of a single book in the cart. */
+export const MAX_QUANTITY = 99;
+
 export interface CartItem {
   book: Book;
   quantity: number;
@@ -38,6 +41,7 @@ export class CartServiceService {
   addToCart(book: Book): void {
     const item = this.findItem(this.items, book);
     if (item) {
+      if (item.quantity >= MAX_QUANTITY) return;
       item.quantity++;
     } else {
       this.items = [...this.items, { book, quantity: 1 }];
@@ -58,6 +62,15 @@ export class CartServiceService {
     if (item.quantity <= 0) {
       this.items = this.items.filter((i) => i !== item);
     }
+    this.save();
+  }
+
+  /** Removes the book's whole line, whatever its quantity. */
+  removeAll(book: Book): void {
+    const item = this.findItem(this.items, book);
+    if (!item) return;
+
+    this.items = this.items.filter((i) => i !== item);
     this.save();
   }
 
@@ -118,7 +131,7 @@ export class CartServiceService {
     for (const item of local) {
       const existing = this.findItem(merged, item.book);
       if (existing) {
-        existing.quantity += item.quantity;
+        existing.quantity = Math.min(existing.quantity + item.quantity, MAX_QUANTITY);
       } else {
         merged.push({ ...item });
       }
@@ -134,7 +147,8 @@ export class CartServiceService {
         typeof item?.book?.name === 'string' &&
         typeof item?.book?.price === 'number' &&
         Number.isInteger(item?.quantity) &&
-        item.quantity > 0
+        item.quantity > 0 &&
+        item.quantity <= MAX_QUANTITY
     );
   }
 

@@ -5,6 +5,7 @@
   <div>
     <a class="mx-4" routerLink="cart">My Cart</a>
     <ng-container *ngIf="user$ | async as user; else loggedOut">
+      <a class="mx-4" routerLink="/orders">My orders</a>
       Hello {{ user.displayName }}
       <ng-container *ngIf="user.metadata?.lastSignInTime as lastLogin">
         Last login: {{ lastLogin }}

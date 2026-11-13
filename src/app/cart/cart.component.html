@@ -22,10 +22,20 @@
           <td class="p-3">{{ item.book.name | titlecase }}</td>
           <td class="p-3 italic">{{ item.book.author }}</td>
           <td class="p-3 text-right">{{ item.book.price | currency: 'GBP' }}</td>
-          <td class="p-3 text-center">{{ item.quantity }}</td>
+          <td class="p-3">
+            <div class="flex items-center justify-center gap-2">
+              <button type="button" (click)="decrement(item.book)" [disabled]="item.quantity <= 1"
+                [attr.aria-label]="'Decrease quantity of ' + item.book.name"
+                class="w-8 h-8 rounded border bg-purple-100 hover:bg-purple-300 disabled:opacity-40 disabled:cursor-not-allowed">−</button>
+              <span class="w-8 text-center" aria-live="polite">{{ item.quantity }}</span>
+              <button type="button" (click)="increment(item.book)" [disabled]="item.quantity >= maxQuantity"
+                [attr.aria-label]="'Increase quantity of ' + item.book.name"
+                class="w-8 h-8 rounded border bg-purple-100 hover:bg-purple-300 disabled:opacity-40 disabled:cursor-not-allowed">+</button>
+            </div>
+          </td>
           <td class="p-3 text-right">{{ item.book.price * item.quantity | currency: 'GBP' }}</td>
           <td class="p-3 text-right">
-            <button class="px-3 py-1 bg-purple-300 border rounded" (click)="removeFromCart(item.book)">Remove</button>
+            <button type="button" class="px-3 py-1 bg-purple-300 border rounded" (click)="removeFromCart(item.book)">Remove</button>
           </td>
         </tr>
       </tbody>

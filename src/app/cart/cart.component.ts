@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { CartItem, CartServiceService } from '../cart-service.service';
+import { CartItem, CartServiceService, MAX_QUANTITY } from '../cart-service.service';
 import { OrderService } from '../order.service';
 import { Book } from '../types/book';
 
@@ -10,6 +10,7 @@ import { Book } from '../types/book';
   styleUrls: ['./cart.component.css'],
 })
 export class CartComponent {
+  readonly maxQuantity = MAX_QUANTITY;
   isPlacingOrder = false;
   orderError: string | null = null;
 
@@ -19,8 +20,16 @@ export class CartComponent {
     private router: Router
   ) {}
 
-  removeFromCart(book: Book): void {
+  increment(book: Book): void {
+    this.cartService.addToCart(book);
+  }
+
+  decrement(book: Book): void {
     this.cartService.remove(book);
+  }
+
+  removeFromCart(book: Book): void {
+    this.cartService.removeAll(book);
   }
 
   getCart(): CartItem[] {

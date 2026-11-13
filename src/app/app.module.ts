@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { BookComponent } from './book/book.component';
 import { CartComponent } from './cart/cart.component';
 import { OrderConfirmationComponent } from './order-confirmation/order-confirmation.component';
+import { OrdersComponent } from './orders/orders.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { OrderConfirmationComponent } from './order-confirmation/order-confirmat
     BookcatalogComponent,
     BookComponent,
     CartComponent,
-    OrderConfirmationComponent
+    OrderConfirmationComponent,
+    OrdersComponent
   ],
   imports: [
     BrowserModule,

@@ -11,6 +11,8 @@ import { Order } from '../types/order';
 export class OrderConfirmationComponent implements OnInit {
   order: Order | null = null;
   isLoading = true;
+  /** True right after checkout; false when opened from "My orders". */
+  readonly justPlaced: boolean = this.route.snapshot.data['justPlaced'] === true;
   isGenerating = false;
   error: string | null = null;
 

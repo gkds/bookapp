@@ -1,10 +1,17 @@
 <p *ngIf="isLoading" class="my-4 text-sm">Loading your order...</p>
 
 <div *ngIf="!isLoading && order as order; else noOrder" class="max-w-3xl m-auto">
-  <div class="p-4 mb-6 rounded bg-green-100 text-green-900" role="status">
+  <div *ngIf="justPlaced; else orderHeader" class="p-4 mb-6 rounded bg-green-100 text-green-900" role="status">
     <h2 class="text-xl font-bold">Thank you for your order!</h2>
     <p class="text-sm">Order <strong>{{ order.id }}</strong> placed on {{ order.date | date: 'medium' }}.</p>
   </div>
+  <ng-template #orderHeader>
+    <div class="mb-6">
+      <a routerLink="/orders" class="text-sm text-purple-700 underline">&larr; My orders</a>
+      <h2 class="text-xl font-bold mt-2">Order {{ order.id }}</h2>
+      <p class="text-sm">Placed on {{ order.date | date: 'medium' }}</p>
+    </div>
+  </ng-template>
 
   <div class="overflow-x-auto">
     <table class="w-full text-sm border-collapse">

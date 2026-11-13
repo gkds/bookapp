@@ -1,6 +1,15 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { doc, getDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  where,
+  writeBatch,
+} from 'firebase/firestore';
 import { CartServiceService } from './cart-service.service';
 import { auth, db } from './firebase';
 import { Order } from './types/order';
@@ -63,6 +72,22 @@ export class OrderService {
       // The security rules refuse to read another user's (or a missing) order.
       return null;
     }
+  }
+
+  /** The current user's orders, most recent first. */
+  async getMyOrders(): Promise<Order[]> {
+    const user = auth.currentUser;
+    if (!user) return [];
+
+    // Filtering on userId matches the security rules; sorting is done here
+    // so that no composite Firestore index is needed.
+    const snapshot = await getDocs(query(collection(db, 'orders'), where('userId', '==', user.uid)));
+    return snapshot.docs
+      .map((d) => {
+        const { userId, createdAt, ...order } = d.data();
+        return order as Order;
+      })
+      .sort((a, b) => b.date.localeCompare(a.date));
   }
 
   /** Builds the invoice PDF and starts the download. */
