@@ -12,7 +12,7 @@ export class BookcatalogComponent implements OnInit {
 
   catalog: Book[] = [
   {
-    name: "Clean code",
+    name: "Clean Code",
     author: "Robert C. Martin",
     image : "https://images2.medimops.eu/product/e5315c/M00132350882-large.jpg",
     price: 50
@@ -30,7 +30,7 @@ export class BookcatalogComponent implements OnInit {
     price: 48.5
   },
   {
-    name: 'GoodNight Punpun, Vol 3',
+    name: 'Goodnight Punpun, Vol. 3',
     author: 'Inio Asano',
     image: "https://libris.to/media/jacket/10044978t.jpg",
     price: 23.62

@@ -12,6 +12,9 @@ export class BookComponent implements OnInit {
   @Input() book : Book = {} as Book
   @Output() bookEmitter = new EventEmitter<Book>()
 
+  /** Set when the cover cannot be loaded, to show a placeholder instead. */
+  imageFailed = false
+
   constructor() { }
 
   ngOnInit(): void {

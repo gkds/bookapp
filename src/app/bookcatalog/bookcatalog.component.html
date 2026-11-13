@@ -1,12 +1,9 @@
-<h2 class="text-center">Programming books catalog</h2>
+<section class="max-w-6xl mx-auto">
+  <h2 class="text-2xl font-semibold text-center my-6">Programming books catalog</h2>
 
-<!-- Property binding -->
-
-<ul class="flex flex-wrap justify-center">
-    <ng-container *ngFor="let book of catalog; let i = index">
-       <app-book (bookEmitter)="addToCart($event)" [book]="book" class="w-1/2 p-5 text-center"></app-book>
-    </ng-container>
-</ul>
-
-
-
+  <ul class="grid gap-4 sm:gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <li *ngFor="let book of catalog">
+      <app-book class="block h-full" [book]="book" (bookEmitter)="addToCart($event)"></app-book>
+    </li>
+  </ul>
+</section>

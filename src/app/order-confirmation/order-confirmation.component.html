@@ -25,7 +25,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let line of order.lines" class="border-b">
-          <td class="p-3">{{ line.name | titlecase }} <span class="italic">by {{ line.author }}</span></td>
+          <td class="p-3">{{ line.name }} <span class="italic">by {{ line.author }}</span></td>
           <td class="p-3 text-right">{{ line.unitPrice | currency: 'GBP' }}</td>
           <td class="p-3 text-center">{{ line.quantity }}</td>
           <td class="p-3 text-right">{{ line.unitPrice * line.quantity | currency: 'GBP' }}</td>

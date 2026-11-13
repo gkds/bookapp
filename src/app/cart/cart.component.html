@@ -19,7 +19,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of getCart()" class="border-b">
-          <td class="p-3">{{ item.book.name | titlecase }}</td>
+          <td class="p-3">{{ item.book.name }}</td>
           <td class="p-3 italic">{{ item.book.author }}</td>
           <td class="p-3 text-right">{{ item.book.price | currency: 'GBP' }}</td>
           <td class="p-3">
