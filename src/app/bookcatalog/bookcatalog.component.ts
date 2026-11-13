@@ -1,56 +1,41 @@
-import { CartServiceService } from './../cart-service.service';
-import { Book } from './../types/book';
 import { Component, OnInit } from '@angular/core';
-
+import { BookService } from '../book.service';
+import { CartServiceService } from '../cart-service.service';
+import { Book } from '../types/book';
 
 @Component({
   selector: 'bookcatalog',
   templateUrl: './bookcatalog.component.html',
-  styleUrls: ['./bookcatalog.component.css']
+  styleUrls: ['./bookcatalog.component.css'],
 })
 export class BookcatalogComponent implements OnInit {
+  catalog: Book[] = [];
+  isLoading = true;
+  error: string | null = null;
 
-  catalog: Book[] = [
-  {
-    name: "Clean Code",
-    author: "Robert C. Martin",
-    image : "https://images2.medimops.eu/product/e5315c/M00132350882-large.jpg",
-    price: 50
-  },
-  {
-    name: "ISTQB Foundation Sample Exam Questions Certified Tester Foundation Level (CTFL) 2018 Syllabus",
-    author:  "Chavi Raj Dosaj",
-    image: "https://libris.to/media/jacket/26116152t.jpg" ,
-    price: 25 
-  },
-  {
-    name: "Test Automation Fundamentals",
-    author: "Thomas Steirer",
-    image: "https://libris.to/media/jacket/38923017t.jpg",
-    price: 48.5
-  },
-  {
-    name: 'Goodnight Punpun, Vol. 3',
-    author: 'Inio Asano',
-    image: "https://libris.to/media/jacket/10044978t.jpg",
-    price: 23.62
-  }
-]
+  constructor(private bookService: BookService, private cartService: CartServiceService) {}
 
-isShowing = false;
-myInput:string = null
-
-handleInput(event:any) {
-  this.myInput = event.target.value
-}
-
-addToCart(event:Book){
-  this.cartService.addToCart(event)
-}
-
-constructor(private cartService: CartServiceService) { }
-
-ngOnInit(): void {
+  ngOnInit(): void {
+    this.load();
   }
 
+  async load(): Promise<void> {
+    this.isLoading = true;
+    this.error = null;
+    try {
+      this.catalog = await this.bookService.getBooks();
+    } catch {
+      this.error = 'The catalog could not be loaded.';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  addToCart(book: Book): void {
+    this.cartService.addToCart(book);
+  }
+
+  trackById(_: number, book: Book): string {
+    return book.id;
+  }
 }

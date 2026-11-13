@@ -7,6 +7,8 @@
     "start:emulators": "ng serve --configuration emulators",
     "emulators": "firebase emulators:start --only auth,firestore",
     "deploy:rules": "firebase deploy --only firestore:rules",
+    "seed:books": "node scripts/seed-books.mjs",
+    "seed:emulators": "node scripts/seed-books.mjs --emulator",
     "build": "ng build",
     "test": "ng test",
     "e2e": "ng e2e"
@@ -33,7 +35,9 @@
     "@angular/cli": "~14.0.2",
     "@angular/compiler-cli": "^14.0.0",
     "@types/jasmine": "~4.0.0",
+    "@types/node": "20.10.4",
     "autoprefixer": "^10.4.7",
+    "firebase-admin": "12.7.0",
     "firebase-tools": "15.36.0",
     "jasmine-core": "~4.1.0",
     "karma": "~6.3.0",

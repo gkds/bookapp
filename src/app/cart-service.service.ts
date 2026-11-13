@@ -153,7 +153,12 @@ export class CartServiceService {
   }
 
   private findItem(items: CartItem[], book: Book): CartItem | undefined {
-    // Books have no id yet: identify them by name and author.
-    return items.find((i) => i.book.name === book.name && i.book.author === book.author);
+    return items.find((i) => this.sameBook(i.book, book));
+  }
+
+  /** Same catalog book: by id, or by title and author for carts saved before ids existed. */
+  private sameBook(a: Book, b: Book): boolean {
+    if (a.id && b.id) return a.id === b.id;
+    return a.name === b.name && a.author === b.author;
   }
 }

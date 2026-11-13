@@ -1,4 +1,5 @@
 export interface OrderLine {
+  bookId?: string;
   name: string;
   author: string;
   unitPrice: number;

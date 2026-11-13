@@ -10,6 +10,7 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 The app uses Firebase Authentication and Cloud Firestore:
 
+- `books/{bookId}`: the catalog, public and read-only from the app. Its content lives in `data/books.json` and is loaded with a script (below).
 - `carts/{uid}`: the logged-in user's cart (items added before login are merged into it).
 - `orders/{orderId}`: placed orders, readable only by their owner and never editable from the client.
 
@@ -19,11 +20,14 @@ Access rules live in `firestore.rules`.
 
 1. In the Firebase console, create the Firestore database (Build > Firestore Database).
 2. Deploy the security rules: `npx firebase login`, then `npm run deploy:rules`.
+3. Load the catalog: `gcloud auth application-default login` (or set `GOOGLE_APPLICATION_CREDENTIALS` to a service-account key), then `npm run seed:books`.
+   Edit `data/books.json` and re-run the command to add or update books; it never creates duplicates.
 
 **Local development with the emulators** (no real data touched; needs Java)
 
 ```bash
 npm run emulators         # Auth on :9099, Firestore on :8080, UI on :4000
+npm run seed:emulators    # load data/books.json into the emulator (each time the emulators restart)
 npm run start:emulators   # app on http://localhost:4200 wired to the emulators
 ```
 

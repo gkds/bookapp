@@ -40,6 +40,8 @@ export class OrderService {
       customerName: user.displayName ?? '',
       customerEmail: user.email ?? '',
       lines: items.map((item) => ({
+        // Firestore rejects undefined: only set bookId when known.
+        ...(item.book.id ? { bookId: item.book.id } : {}),
         name: item.book.name,
         author: item.book.author,
         unitPrice: item.book.price,

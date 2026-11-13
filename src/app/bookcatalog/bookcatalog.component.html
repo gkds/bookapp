@@ -1,9 +1,29 @@
 <section class="max-w-6xl mx-auto">
   <h2 class="text-2xl font-semibold text-center my-6">Programming books catalog</h2>
 
-  <ul class="grid gap-4 sm:gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-    <li *ngFor="let book of catalog">
+  <div *ngIf="error" role="alert" class="mb-4 p-3 bg-red-300 text-red-800 rounded flex items-center justify-between gap-4">
+    <span>{{ error }}</span>
+    <button type="button" (click)="load()" class="px-3 py-1 rounded bg-white text-red-800 border">Retry</button>
+  </div>
+
+  <!-- Placeholder cards while the catalog loads -->
+  <ul *ngIf="isLoading" class="grid gap-4 sm:gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4" aria-busy="true">
+    <li *ngFor="let i of [1, 2, 3, 4]" class="rounded-xl border overflow-hidden animate-pulse">
+      <div class="aspect-[2/3] bg-gray-200"></div>
+      <div class="p-4 space-y-2">
+        <div class="h-4 bg-gray-200 rounded"></div>
+        <div class="h-3 w-2/3 bg-gray-200 rounded"></div>
+      </div>
+    </li>
+  </ul>
+
+  <ul *ngIf="!isLoading && catalog.length > 0" class="grid gap-4 sm:gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <li *ngFor="let book of catalog; trackBy: trackById">
       <app-book class="block h-full" [book]="book" (bookEmitter)="addToCart($event)"></app-book>
     </li>
   </ul>
+
+  <p *ngIf="!isLoading && !error && catalog.length === 0" class="my-8 text-center text-sm text-gray-600">
+    No books in the catalog yet.
+  </p>
 </section>
