@@ -45,7 +45,6 @@ handleInput(event:any) {
 }
 
 addToCart(event:Book){
-  console.log(event)
   this.cartService.addToCart(event)
 }
 

@@ -1,27 +1,24 @@
-import { Book } from './../types/book';
-import { CartServiceService } from './../cart-service.service';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { CartItem, CartServiceService } from '../cart-service.service';
+import { Book } from '../types/book';
 
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.component.html',
-  styleUrls: ['./cart.component.css']
+  styleUrls: ['./cart.component.css'],
 })
-export class CartComponent implements OnInit {
+export class CartComponent {
+  constructor(private cartService: CartServiceService) {}
 
- 
-  constructor(private cartService : CartServiceService ) { }
-
-  ngOnInit(): void {
-   
+  removeFromCart(book: Book): void {
+    this.cartService.remove(book);
   }
 
-  removeFromCart(book: Book){
-    console.log("removing book form Cart....",book)
-    this.cartService.remove(book)
+  getCart(): CartItem[] {
+    return this.cartService.get();
   }
 
-  getCart(){
-    return this.cartService.get()
+  total(): number {
+    return this.cartService.total();
   }
 }

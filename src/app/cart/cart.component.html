@@ -1,13 +1,12 @@
 <h2>Your cart</h2>
-<div  *ngIf="getCart().length > 0">
-   
-    <ng-container *ngFor="let book of getCart()">
-    
-        <P class="my-4 text-sm border">{{ book.name | titlecase}} {{book.price | currency:'GBP'}}   
-           <button class="p-4 bg-purple-300 border rounded" (click)="removeFromCart(book)">Remove</button>
-       </P>
-    </ng-container>
-
+<div *ngIf="getCart().length > 0; else emptyCart">
+  <p *ngFor="let item of getCart()" class="my-4 text-sm border">
+    {{ item.book.name | titlecase }} × {{ item.quantity }}
+    {{ item.book.price * item.quantity | currency: 'GBP' }}
+    <button class="p-4 bg-purple-300 border rounded" (click)="removeFromCart(item.book)">Remove</button>
+  </p>
+  <p class="font-bold">Total: {{ total() | currency: 'GBP' }}</p>
 </div>
-
-
+<ng-template #emptyCart>
+  <p class="my-4 text-sm">Your cart is empty.</p>
+</ng-template>

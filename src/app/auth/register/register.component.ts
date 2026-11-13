@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { RegisterForm } from 'src/app/types/registerForm';
+import { RegisterForm } from '../../types/registerForm';
 import { AuthService } from '../authService';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent implements OnInit {
-
   form: RegisterForm = {
     displayName: '',
     email: '',
@@ -16,18 +15,21 @@ export class RegisterComponent implements OnInit {
     confirm_password: '',
   };
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
+    this.authService.clearError();
   }
 
-  submit() {
-    console.log("register submitted ::!");
+  submit(): void {
     this.authService.register(this.form);
   }
 
-  isLoading() {
-     return this.authService.isLoading;
-    
+  isLoading(): boolean {
+    return this.authService.isLoading;
+  }
+
+  errorMessage(): string | null {
+    return this.authService.errorMessage;
   }
 }

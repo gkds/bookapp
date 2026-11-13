@@ -19,7 +19,6 @@ export class BookComponent implements OnInit {
   }
 
   addToCart(){
-   // console.log('this book is '+JSON.stringify(this.book))
    this.bookEmitter.emit(this.book)
   }
 

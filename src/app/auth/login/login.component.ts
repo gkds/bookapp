@@ -1,26 +1,33 @@
-import { LoginForm } from './../../types/loginform';
 import { Component, OnInit } from '@angular/core';
+import { LoginForm } from '../../types/loginform';
 import { AuthService } from '../authService';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-
-  form : LoginForm = {
+  form: LoginForm = {
     email: '',
-    password: ''
-  }
+    password: '',
+  };
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
+    this.authService.clearError();
   }
 
-  submit(){
-    console.log("== form submitted :", this.form);
+  submit(): void {
     this.authService.login(this.form);
+  }
+
+  isLoading(): boolean {
+    return this.authService.isLoading;
+  }
+
+  errorMessage(): string | null {
+    return this.authService.errorMessage;
   }
 }

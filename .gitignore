@@ -44,3 +44,9 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Firebase CLI cache
+.firebase/
+
+# Angular CLI build cache
+/.angular/cache
