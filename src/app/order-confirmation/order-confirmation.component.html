@@ -1,4 +1,6 @@
-<div *ngIf="order; else noOrder" class="max-w-3xl m-auto">
+<p *ngIf="isLoading" class="my-4 text-sm">Loading your order...</p>
+
+<div *ngIf="!isLoading && order as order; else noOrder" class="max-w-3xl m-auto">
   <div class="p-4 mb-6 rounded bg-green-100 text-green-900" role="status">
     <h2 class="text-xl font-bold">Thank you for your order!</h2>
     <p class="text-sm">Order <strong>{{ order.id }}</strong> placed on {{ order.date | date: 'medium' }}.</p>
@@ -43,5 +45,5 @@
 </div>
 
 <ng-template #noOrder>
-  <p class="my-4 text-sm">No recent order found. <a routerLink="/cart" class="text-purple-700 underline">Back to your cart</a></p>
+  <p *ngIf="!isLoading" class="my-4 text-sm">Order not found. <a routerLink="/cart" class="text-purple-700 underline">Back to your cart</a></p>
 </ng-template>

@@ -11,7 +11,7 @@ import { OrderConfirmationComponent } from './order-confirmation/order-confirmat
 const routes: Routes = [
   { path:'', component: BookcatalogComponent},
   { path:'cart', component: CartComponent, canActivate:[AuthGuard]},
-  { path:'order-confirmation', component: OrderConfirmationComponent, canActivate:[AuthGuard]},
+  { path:'order-confirmation/:id', component: OrderConfirmationComponent, canActivate:[AuthGuard]},
   { path:'login', component: LoginComponent},
   { path:'register', component: RegisterComponent},
 ];

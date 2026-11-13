@@ -1,10 +1,9 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { auth } from './firebase';
+import { doc, getDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { CartServiceService } from './cart-service.service';
+import { auth, db } from './firebase';
 import { Order } from './types/order';
-
-const LAST_ORDER_KEY = 'bookapp.lastOrder';
 
 @Injectable({
   providedIn: 'root',
@@ -12,21 +11,25 @@ const LAST_ORDER_KEY = 'bookapp.lastOrder';
 export class OrderService {
   private readonly currency = new CurrencyPipe('en-US');
   private readonly datePipe = new DatePipe('en-US');
-  private lastOrder: Order | null = null;
 
   constructor(private cartService: CartServiceService) {}
 
-  /** Turns the current cart into an order, empties the cart and returns the order. */
-  placeOrder(): Order | null {
-    const items = this.cartService.get();
-    if (items.length === 0) return null;
-
+  /**
+   * Saves the current cart as an order in `orders/{id}` and empties the
+   * stored cart in the same atomic write. Returns the saved order.
+   */
+  async placeOrder(): Promise<Order> {
     const user = auth.currentUser;
+    if (!user) throw new Error('You must be logged in to place an order.');
+
+    const items = this.cartService.get();
+    if (items.length === 0) throw new Error('Your cart is empty.');
+
     const order: Order = {
       id: this.newOrderId(),
       date: new Date().toISOString(),
-      customerName: user?.displayName ?? '',
-      customerEmail: user?.email ?? '',
+      customerName: user.displayName ?? '',
+      customerEmail: user.email ?? '',
       lines: items.map((item) => ({
         name: item.book.name,
         author: item.book.author,
@@ -36,26 +39,30 @@ export class OrderService {
       total: this.cartService.total(),
     };
 
-    this.cartService.clear();
-    // Kept for the browser session so the confirmation page survives a reload.
-    try {
-      sessionStorage.setItem(LAST_ORDER_KEY, JSON.stringify(order));
-    } catch {
-      // Storage unavailable (private mode, quota): the page still works until reload.
-    }
-    this.lastOrder = order;
+    const batch = writeBatch(db);
+    batch.set(doc(db, 'orders', order.id), {
+      ...order,
+      userId: user.uid,
+      createdAt: serverTimestamp(),
+    });
+    batch.set(CartServiceService.cartRef(user.uid), { items: [], updatedAt: serverTimestamp() });
+    await batch.commit();
+
+    this.cartService.clearLocal();
     return order;
   }
 
-  getLastOrder(): Order | null {
-    if (this.lastOrder) return this.lastOrder;
+  /** Reads one of the current user's orders; null if missing or not theirs. */
+  async getOrder(id: string): Promise<Order | null> {
     try {
-      const saved = sessionStorage.getItem(LAST_ORDER_KEY);
-      this.lastOrder = saved ? (JSON.parse(saved) as Order) : null;
+      const snapshot = await getDoc(doc(db, 'orders', id));
+      if (!snapshot.exists()) return null;
+      const { userId, createdAt, ...order } = snapshot.data();
+      return order as Order;
     } catch {
-      this.lastOrder = null;
+      // The security rules refuse to read another user's (or a missing) order.
+      return null;
     }
-    return this.lastOrder;
   }
 
   /** Builds the invoice PDF and starts the download. */

@@ -1,5 +1,9 @@
 <h2 class="text-xl mb-4">Your cart</h2>
 
+<div *ngIf="syncError() as error" role="alert" class="mb-4 p-2 bg-yellow-100 text-yellow-900 rounded">
+  {{ error }}
+</div>
+
 <div *ngIf="getCart().length > 0; else emptyCart">
   <div class="overflow-x-auto">
     <table class="w-full text-sm border-collapse">
@@ -35,10 +39,14 @@
     </table>
   </div>
 
+  <div *ngIf="orderError" role="alert" class="mt-4 p-2 bg-red-300 text-red-800 rounded">
+    {{ orderError }}
+  </div>
+
   <div class="mt-6 flex justify-end">
-    <button (click)="placeOrder()"
-      class="px-6 py-3 bg-purple-700 text-white rounded hover:bg-purple-900">
-      Place order
+    <button (click)="placeOrder()" [disabled]="isPlacingOrder"
+      class="px-6 py-3 bg-purple-700 text-white rounded hover:bg-purple-900 disabled:opacity-50">
+      {{ isPlacingOrder ? 'Placing order...' : 'Place order' }}
     </button>
   </div>
 </div>

@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  useEmulators: false,
   // Firebase Web config: these values are public by design (they identify the
   // project, they do not grant access). Protect the project by restricting the
   // API key to your domains (Google Cloud Console > Credentials), enabling

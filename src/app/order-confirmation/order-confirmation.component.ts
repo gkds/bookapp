@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { OrderService } from '../order.service';
 import { Order } from '../types/order';
 
@@ -7,12 +8,19 @@ import { Order } from '../types/order';
   templateUrl: './order-confirmation.component.html',
   styleUrls: ['./order-confirmation.component.css'],
 })
-export class OrderConfirmationComponent {
-  readonly order: Order | null = this.orderService.getLastOrder();
+export class OrderConfirmationComponent implements OnInit {
+  order: Order | null = null;
+  isLoading = true;
   isGenerating = false;
   error: string | null = null;
 
-  constructor(private orderService: OrderService) {}
+  constructor(private route: ActivatedRoute, private orderService: OrderService) {}
+
+  async ngOnInit(): Promise<void> {
+    const id = this.route.snapshot.paramMap.get('id');
+    this.order = id ? await this.orderService.getOrder(id) : null;
+    this.isLoading = false;
+  }
 
   async downloadInvoice(): Promise<void> {
     if (!this.order || this.isGenerating) return;

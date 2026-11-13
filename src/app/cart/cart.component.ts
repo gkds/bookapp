@@ -10,6 +10,9 @@ import { Book } from '../types/book';
   styleUrls: ['./cart.component.css'],
 })
 export class CartComponent {
+  isPlacingOrder = false;
+  orderError: string | null = null;
+
   constructor(
     private cartService: CartServiceService,
     private orderService: OrderService,
@@ -28,9 +31,22 @@ export class CartComponent {
     return this.cartService.total();
   }
 
-  placeOrder(): void {
-    if (this.orderService.placeOrder()) {
-      this.router.navigate(['/order-confirmation']);
+  syncError(): string | null {
+    return this.cartService.syncError;
+  }
+
+  async placeOrder(): Promise<void> {
+    if (this.isPlacingOrder) return;
+
+    this.isPlacingOrder = true;
+    this.orderError = null;
+    try {
+      const order = await this.orderService.placeOrder();
+      await this.router.navigate(['/order-confirmation', order.id]);
+    } catch {
+      this.orderError = 'Your order could not be placed. Please try again.';
+    } finally {
+      this.isPlacingOrder = false;
     }
   }
 }

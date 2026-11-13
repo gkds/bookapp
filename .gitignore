@@ -50,3 +50,8 @@ Thumbs.db
 
 # Angular CLI build cache
 /.angular/cache
+
+# Firebase emulator logs
+firebase-debug.log
+firestore-debug.log
+ui-debug.log

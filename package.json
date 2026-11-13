@@ -4,6 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:emulators": "ng serve --configuration emulators",
+    "emulators": "firebase emulators:start --only auth,firestore",
+    "deploy:rules": "firebase deploy --only firestore:rules",
     "build": "ng build",
     "test": "ng test",
     "e2e": "ng e2e"
@@ -31,6 +34,7 @@
     "@angular/compiler-cli": "^14.0.0",
     "@types/jasmine": "~4.0.0",
     "autoprefixer": "^10.4.7",
+    "firebase-tools": "15.36.0",
     "jasmine-core": "~4.1.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
