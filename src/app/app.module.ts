@@ -13,6 +13,7 @@ import { OrdersComponent } from './orders/orders.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { CheckoutStepsComponent } from './checkout/checkout-steps.component';
 import { InventoryComponent } from './inventory/inventory.component';
+import { CategoriesComponent } from './categories/categories.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { InventoryComponent } from './inventory/inventory.component';
     OrdersComponent,
     CheckoutComponent,
     CheckoutStepsComponent,
-    InventoryComponent
+    InventoryComponent,
+    CategoriesComponent
   ],
   imports: [
     BrowserModule,

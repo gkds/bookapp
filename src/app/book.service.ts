@@ -47,6 +47,18 @@ export class BookService {
     this.books = null;
   }
 
+  /** Moves books to another category (admin only), e.g. before deleting a category. */
+  async setCategory(bookIds: string[], categoryId: string): Promise<void> {
+    for (let start = 0; start < bookIds.length; start += BATCH_SIZE) {
+      const batch = writeBatch(db);
+      for (const id of bookIds.slice(start, start + BATCH_SIZE)) {
+        batch.update(doc(db, 'books', id), { category: categoryId });
+      }
+      await batch.commit();
+    }
+    this.books = null;
+  }
+
   /** Removes a book from the catalog (admin only). */
   async deleteBook(id: string): Promise<void> {
     await deleteDoc(doc(db, 'books', id));

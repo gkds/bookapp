@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Book } from './../types/book';
-import { categoryLabel } from '../types/category';
+import { CategoryService } from '../category.service';
 
 /** At or below this stock, the card shows "Only N left". */
 const LOW_STOCK = 3;
@@ -17,8 +17,10 @@ export class BookComponent {
   /** Set when the cover cannot be loaded, to show a placeholder instead. */
   imageFailed = false;
 
+  constructor(private categoryService: CategoryService) {}
+
   get category(): string {
-    return categoryLabel(this.book.category);
+    return this.categoryService.labelOf(this.book.category);
   }
 
   get isOutOfStock(): boolean {

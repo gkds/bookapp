@@ -1,5 +1,5 @@
 import { Book } from '../types/book';
-import { CATEGORIES, CATEGORY_IDS, OTHER_CATEGORY } from '../types/category';
+import { Category, OTHER_CATEGORY } from '../types/category';
 
 /** Columns of the inventory CSV file, in the order used by the template. */
 export const CSV_COLUMNS = ['id', 'name', 'author', 'price', 'category', 'stock', 'image', 'isbn', 'year'] as const;
@@ -79,11 +79,10 @@ export function slugify(value: string): string {
 }
 
 /** Accepts a category id ("testing-qa") or its label ("Software Testing & QA"), any case. */
-function resolveCategory(value: string): string | null {
+function resolveCategory(value: string, categories: readonly Category[]): string | null {
   const v = value.trim().toLowerCase();
-  if (!v) return OTHER_CATEGORY.id;
-  if (CATEGORY_IDS.has(v)) return v;
-  return CATEGORIES.find((c) => c.label.toLowerCase() === v)?.id ?? null;
+  if (!v || v === OTHER_CATEGORY.id) return OTHER_CATEGORY.id;
+  return categories.find((c) => c.id === v || c.label.toLowerCase() === v)?.id ?? null;
 }
 
 function parseNumber(value: string): number {
@@ -91,8 +90,11 @@ function parseNumber(value: string): number {
   return Number(value.trim().replace(/^[£$€]/, '').replace(',', '.'));
 }
 
-/** Turns the CSV text into books, with one list of errors per line. */
-export function importBooks(text: string): ImportResult {
+/**
+ * Turns the CSV text into books, with one list of errors per line.
+ * `categories` are the existing ones: a book may only use one of them.
+ */
+export function importBooks(text: string, categories: readonly Category[]): ImportResult {
   const table = parseCsv(text);
   if (table.length < 2) {
     return { rows: [], fileErrors: ['The file is empty: it needs a header line and at least one book.'] };
@@ -124,7 +126,7 @@ export function importBooks(text: string): ImportResult {
     const price = parseNumber(get('price'));
     if (!get('price') || !Number.isFinite(price) || price < 0) errors.push('price must be a number ≥ 0');
 
-    const category = resolveCategory(get('category'));
+    const category = resolveCategory(get('category'), categories);
     if (!category) errors.push(`unknown category "${get('category')}"`);
 
     let stock: number | undefined;

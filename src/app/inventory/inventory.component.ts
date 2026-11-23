@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { BookService } from '../book.service';
 import { Book } from '../types/book';
-import { CATEGORIES, categoryLabel } from '../types/category';
+import { CategoryService } from '../category.service';
+import { Category } from '../types/category';
 import { booksToCsv, ImportResult, ImportRow, importBooks } from './csv';
 
 /** Larger files are refused before reading them. */
@@ -12,8 +13,7 @@ const MAX_FILE_SIZE = 2 * 1024 * 1024;
   templateUrl: './inventory.component.html',
 })
 export class InventoryComponent implements OnInit {
-  readonly categories = CATEGORIES;
-  readonly categoryLabel = categoryLabel;
+  categories: Category[] = [];
 
   books: Book[] = [];
   isLoading = true;
@@ -28,7 +28,11 @@ export class InventoryComponent implements OnInit {
 
   deletingId: string | null = null;
 
-  constructor(private bookService: BookService) {}
+  constructor(private bookService: BookService, private categoryService: CategoryService) {}
+
+  categoryLabel(id: string | undefined): string {
+    return this.categoryService.labelOf(id);
+  }
 
   ngOnInit(): void {
     this.load();
@@ -38,7 +42,10 @@ export class InventoryComponent implements OnInit {
     this.isLoading = true;
     this.loadError = null;
     try {
-      this.books = await this.bookService.refresh();
+      [this.books, this.categories] = await Promise.all([
+        this.bookService.refresh(),
+        this.categoryService.refresh(),
+      ]);
     } catch {
       this.loadError = 'The inventory could not be loaded.';
     } finally {
@@ -98,7 +105,7 @@ export class InventoryComponent implements OnInit {
       this.preview = { rows: [], fileErrors: ['The file is larger than 2 MB.'] };
       return;
     }
-    this.preview = importBooks(await file.text());
+    this.preview = importBooks(await file.text(), this.categories);
   }
 
   cancelImport(): void {

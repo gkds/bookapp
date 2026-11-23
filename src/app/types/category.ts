@@ -1,32 +1,17 @@
+/** A document of the Firestore `categories` collection (managed on /admin/categories). */
 export interface Category {
-  /** Stable identifier stored on each book (`book.category`). */
+  /** Document id, stored on each book (`book.category`). Never changes once created. */
   id: string;
   label: string;
+  /** Position in menus and lists, smallest first. */
+  order: number;
 }
 
 /**
- * Book categories of the store. The ids are stored in Firestore and used in
- * CSV imports, so they must not be renamed once books use them; labels can
- * change freely.
+ * Built-in fallback, not stored in Firestore: books without a category, or
+ * whose category was deleted, are shown under it.
  */
-export const CATEGORIES: readonly Category[] = [
-  { id: 'software-craftsmanship', label: 'Software Craftsmanship' },
-  { id: 'architecture-design', label: 'Architecture & Design' },
-  { id: 'programming-languages', label: 'Programming Languages' },
-  { id: 'testing-qa', label: 'Software Testing & QA' },
-  { id: 'algorithms-cs', label: 'Algorithms & Computer Science' },
-  { id: 'web-development', label: 'Web Development' },
-  { id: 'data-ai', label: 'Data Science & AI' },
-  { id: 'devops-cloud', label: 'DevOps & Cloud' },
-  { id: 'management-agile', label: 'Project Management & Agile' },
-  { id: 'manga-comics', label: 'Manga & Comics' },
-];
+export const OTHER_CATEGORY: Category = { id: 'other', label: 'Other', order: Number.MAX_SAFE_INTEGER };
 
-/** Category used for books that have none (e.g. imported before categories existed). */
-export const OTHER_CATEGORY: Category = { id: 'other', label: 'Other' };
-
-export const CATEGORY_IDS: ReadonlySet<string> = new Set([...CATEGORIES.map((c) => c.id), OTHER_CATEGORY.id]);
-
-export function categoryLabel(id: string | undefined): string {
-  return CATEGORIES.find((c) => c.id === id)?.label ?? OTHER_CATEGORY.label;
-}
+/** Valid category id: lowercase letters, digits and dashes. */
+export const CATEGORY_ID_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;

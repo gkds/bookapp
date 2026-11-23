@@ -1,5 +1,6 @@
 import { AdminGuard } from './auth/admin.guard';
 import { AuthGuard } from './auth/auth.guard';
+import { CategoriesComponent } from './categories/categories.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { InventoryComponent } from './inventory/inventory.component';
 import { RegisterComponent } from './auth/register/register.component';
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path:'cart', component: CartComponent, canActivate:[AuthGuard]},
   { path:'checkout', component: CheckoutComponent, canActivate:[AuthGuard]},
   { path:'admin/inventory', component: InventoryComponent, canActivate:[AdminGuard]},
+  { path:'admin/categories', component: CategoriesComponent, canActivate:[AdminGuard]},
   { path:'order-confirmation/:id', component: OrderConfirmationComponent, canActivate:[AuthGuard], data: { justPlaced: true }},
   { path:'orders', component: OrdersComponent, canActivate:[AuthGuard]},
   { path:'orders/:id', component: OrderConfirmationComponent, canActivate:[AuthGuard]},

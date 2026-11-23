@@ -1,4 +1,5 @@
-// Loads data/books.json into the Firestore `books` collection.
+// Loads data/categories.json and data/books.json into the Firestore
+// `categories` and `books` collections.
 //
 //   npm run seed:emulators   -> local Firestore emulator (must be running)
 //   npm run seed:books       -> the real Firebase project; needs Google
@@ -6,8 +7,9 @@
 //                               or GOOGLE_APPLICATION_CREDENTIALS=<service-account.json>
 //
 // Re-running is safe: each book is written under its own id, so existing
-// books are updated, not duplicated. Books removed from the JSON file are
-// not deleted from Firestore.
+// books are updated, not duplicated. Books and categories removed from the JSON
+// files are not deleted from Firestore. Categories changed on /admin/categories
+// are overwritten by the JSON file for the ids it contains.
 import { readFileSync } from 'node:fs';
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -20,11 +22,16 @@ if (useEmulator) {
 const projectId = JSON.parse(readFileSync(new URL('../.firebaserc', import.meta.url))).projects.default;
 const books = JSON.parse(readFileSync(new URL('../data/books.json', import.meta.url)));
 
-// Keep in sync with src/app/types/category.ts.
-const CATEGORY_IDS = new Set([
-  'software-craftsmanship', 'architecture-design', 'programming-languages', 'testing-qa', 'algorithms-cs',
-  'web-development', 'data-ai', 'devops-cloud', 'management-agile', 'manga-comics', 'other',
-]);
+const categories = JSON.parse(readFileSync(new URL('../data/categories.json', import.meta.url)));
+const CATEGORY_IDS = new Set([...categories.map((c) => c.id), 'other']);
+
+const categoryProblems = categories.flatMap((c, i) => {
+  const errors = [];
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(c.id ?? '') || c.id === 'other') errors.push('id must be a lowercase slug other than "other"');
+  if (typeof c.label !== 'string' || !c.label) errors.push('label is required');
+  if (!Number.isInteger(c.order)) errors.push('order must be a whole number');
+  return errors.map((e) => `category #${i + 1} (${c.id ?? '?'}): ${e}`);
+});
 
 const problems = books.flatMap((book, i) => {
   const errors = [];
@@ -37,8 +44,8 @@ const problems = books.flatMap((book, i) => {
   if (book.stock !== undefined && !(Number.isInteger(book.stock) && book.stock >= 0)) errors.push('stock must be a whole number >= 0');
   return errors.map((e) => `book #${i + 1} (${book.id ?? '?'}): ${e}`);
 });
-if (problems.length > 0) {
-  console.error(problems.join('\n'));
+if (categoryProblems.length + problems.length > 0) {
+  console.error([...categoryProblems, ...problems].join('\n'));
   process.exit(1);
 }
 
@@ -46,9 +53,12 @@ initializeApp({ projectId });
 const db = getFirestore();
 
 const batch = db.batch();
+for (const { id, ...category } of categories) {
+  batch.set(db.collection('categories').doc(id), category);
+}
 for (const { id, ...book } of books) {
   batch.set(db.collection('books').doc(id), book);
 }
 await batch.commit();
 
-console.log(`${books.length} books written to ${useEmulator ? 'the Firestore emulator' : `project ${projectId}`}.`);
+console.log(`${categories.length} categories and ${books.length} books written to ${useEmulator ? 'the Firestore emulator' : `project ${projectId}`}.`);

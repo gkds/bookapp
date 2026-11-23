@@ -3,7 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from '../book.service';
 import { CartServiceService } from '../cart-service.service';
 import { Book } from '../types/book';
-import { CATEGORIES, Category, OTHER_CATEGORY } from '../types/category';
+import { CategoryService } from '../category.service';
+import { Category, OTHER_CATEGORY } from '../types/category';
 
 export type SortOrder = 'title' | 'price-asc' | 'price-desc' | 'newest';
 
@@ -33,6 +34,7 @@ export class BookcatalogComponent implements OnInit {
 
   constructor(
     private bookService: BookService,
+    private categoryService: CategoryService,
     private cartService: CartServiceService,
     private route: ActivatedRoute,
     private router: Router
@@ -53,8 +55,12 @@ export class BookcatalogComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
     try {
-      this.catalog = await this.bookService.getBooks();
-      this.categoryCounts = [...CATEGORIES, OTHER_CATEGORY]
+      const [books, categories] = await Promise.all([
+        this.bookService.getBooks(),
+        this.categoryService.getCategories(),
+      ]);
+      this.catalog = books;
+      this.categoryCounts = [...categories, OTHER_CATEGORY]
         .map((category) => ({ category, count: this.catalog.filter((b) => this.categoryOf(b) === category.id).length }))
         .filter((c) => c.count > 0);
       this.applyFilters();
@@ -122,7 +128,7 @@ export class BookcatalogComponent implements OnInit {
   }
 
   private categoryOf(book: Book): string {
-    return CATEGORIES.some((c) => c.id === book.category) ? book.category! : OTHER_CATEGORY.id;
+    return this.categoryService.resolve(book.category);
   }
 
   private describe(error: unknown): string {

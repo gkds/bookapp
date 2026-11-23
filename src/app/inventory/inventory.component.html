@@ -7,6 +7,7 @@
       </p>
     </div>
     <div class="flex gap-2">
+      <a routerLink="/admin/categories" class="px-3 py-2 rounded border bg-white text-sm hover:bg-gray-50">Manage categories</a>
       <button type="button" (click)="downloadTemplate()" class="px-3 py-2 rounded border bg-white text-sm hover:bg-gray-50">
         CSV template
       </button>
@@ -35,6 +36,7 @@
       <summary class="cursor-pointer">Category ids</summary>
       <ul class="mt-2 inline-grid grid-cols-1 sm:grid-cols-2 gap-x-6 text-left">
         <li *ngFor="let c of categories"><code>{{ c.id }}</code> — {{ c.label }}</li>
+        <li><code>other</code> — Other (also used when the column is empty)</li>
       </ul>
     </details>
   </div>
