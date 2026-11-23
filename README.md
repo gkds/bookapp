@@ -22,12 +22,14 @@ Access rules live in `firestore.rules`.
 2. Deploy the security rules: `npx firebase login`, then `npm run deploy:rules`.
 3. Load the catalog: `gcloud auth application-default login` (or set `GOOGLE_APPLICATION_CREDENTIALS` to a service-account key), then `npm run seed:books`.
    Edit `data/books.json` and re-run the command to add or update books; it never creates duplicates.
+4. Optionally load the extra inventory (25 literature, philosophy and cooking books, with `category` and `stock`): `npm run seed:inventory`.
 
 **Local development with the emulators** (no real data touched; needs Java)
 
 ```bash
 npm run emulators         # Auth on :9099, Firestore on :8080, UI on :4000
 npm run seed:emulators    # load data/books.json into the emulator (each time the emulators restart)
+npm run seed:inventory:emulators   # optional: also load data/inventory.json
 npm run start:emulators   # app on http://localhost:4200 wired to the emulators
 ```
 
