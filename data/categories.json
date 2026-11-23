@@ -1,0 +1,15 @@
+[
+  {"id": "software-craftsmanship", "label": "Software Craftsmanship", "order": 1},
+  {"id": "architecture-design", "label": "Architecture & Design", "order": 2},
+  {"id": "programming-languages", "label": "Programming Languages", "order": 3},
+  {"id": "testing-qa", "label": "Software Testing & QA", "order": 4},
+  {"id": "algorithms-cs", "label": "Algorithms & Computer Science", "order": 5},
+  {"id": "web-development", "label": "Web Development", "order": 6},
+  {"id": "data-ai", "label": "Data Science & AI", "order": 7},
+  {"id": "devops-cloud", "label": "DevOps & Cloud", "order": 8},
+  {"id": "management-agile", "label": "Project Management & Agile", "order": 9},
+  {"id": "manga-comics", "label": "Manga & Comics", "order": 10},
+  {"id": "literature", "label": "Literature", "order": 11},
+  {"id": "philosophy", "label": "Philosophy", "order": 12},
+  {"id": "cooking", "label": "Cooking", "order": 13}
+]

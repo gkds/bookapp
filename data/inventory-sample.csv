@@ -1,0 +1,5 @@
+id;name;author;price;category;stock;image;isbn;year
+you-dont-know-js;You Don't Know JS Yet;Kyle Simpson;29,90;Web Development;12;;9798602477429;2020
+clean-code;Clean Code;Robert C. Martin;45;software-craftsmanship;0;https://images2.medimops.eu/product/e5315c/M00132350882-large.jpg;9780132350884;2008
+;"Hands-On Machine Learning, 3rd Edition";Aurélien Géron;59;data-ai;4;;;2022
+bad-row;Broken;;abc;cooking;-2;http://x;;

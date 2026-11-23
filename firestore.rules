@@ -1,0 +1,76 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Admins hold the `admin` custom claim (set with `npm run set-admin`).
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    function isValidBook(data) {
+      return data.keys().hasOnly(['name', 'author', 'image', 'price', 'category', 'stock', 'isbn', 'year'])
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 300
+        && data.author is string && data.author.size() > 0 && data.author.size() <= 300
+        && data.image is string && data.image.size() <= 2000
+        && data.price is number && data.price >= 0
+        && data.category is string && data.category.size() <= 50
+        && (!('stock' in data) || (data.stock is int && data.stock >= 0))
+        && (!('isbn' in data) || data.isbn is string)
+        && (!('year' in data) || data.year is int);
+    }
+
+    // Catalog: public; only admins write it (Inventory page, or scripts/seed-books.mjs).
+    match /books/{bookId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidBook(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Categories: public; only admins manage them (/admin/categories, or scripts/seed-books.mjs).
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && categoryId.matches('[a-z0-9]+(-[a-z0-9]+)*')
+        && categoryId.size() <= 50
+        && categoryId != 'other'
+        && request.resource.data.keys().hasOnly(['label', 'order'])
+        && request.resource.data.label is string
+        && request.resource.data.label.size() > 0
+        && request.resource.data.label.size() <= 60
+        && request.resource.data.order is int;
+      allow delete: if isAdmin();
+    }
+
+    // One cart per user, readable and writable only by its owner.
+    match /carts/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['items', 'updatedAt'])
+        && request.resource.data.items is list
+        && request.resource.data.items.size() <= 100
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
+
+    // Orders are created by their owner, then never changed from the client.
+    match /orders/{orderId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.id == orderId
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.lines is list
+        && request.resource.data.lines.size() > 0
+        && request.resource.data.lines.size() <= 100
+        && request.resource.data.total is number
+        && request.resource.data.total >= 0
+        // Checkout data: a paid card payment and a delivery address.
+        && request.resource.data.payment.status == 'paid'
+        && request.resource.data.payment.last4.matches('[0-9]{4}')
+        && request.resource.data.shipping is map;
+      allow update, delete: if false;
+    }
+  }
+}

@@ -1,0 +1,108 @@
+<section class="max-w-4xl mx-auto">
+  <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+    <div>
+      <h2 class="text-2xl font-semibold">Categories</h2>
+      <p class="text-sm text-gray-600">Shown in this order on the home page. Books keep the category id, so renaming is safe.</p>
+    </div>
+    <a routerLink="/admin/inventory" class="px-3 py-2 rounded border bg-white text-sm hover:bg-gray-50">&larr; Inventory</a>
+  </div>
+
+  <div *ngIf="message" role="status" class="mb-4 p-3 rounded bg-green-100 text-green-900">{{ message }}</div>
+  <div *ngIf="error" role="alert" class="mb-4 p-3 rounded bg-red-300 text-red-800">{{ error }}</div>
+
+  <!-- Add a category -->
+  <form (ngSubmit)="add()" class="mb-6 p-4 rounded-xl border bg-purple-50 grid gap-3 sm:grid-cols-[1fr_1fr_auto] items-start" novalidate>
+    <label class="block">
+      <span class="block text-xs font-medium text-purple-900 mb-1">New category name</span>
+      <input name="label" [ngModel]="newLabel" (ngModelChange)="onNewLabelChange($event)" [attr.maxlength]="maxLabelLength"
+        placeholder="e.g. Cybersecurity" class="w-full px-3 py-2 rounded border bg-white">
+    </label>
+    <label class="block">
+      <span class="block text-xs font-medium text-purple-900 mb-1">Id (used in CSV files, cannot change later)</span>
+      <input name="id" [ngModel]="newId" (ngModelChange)="onNewIdChange($event)" maxlength="50"
+        placeholder="cybersecurity" class="w-full px-3 py-2 rounded border bg-white font-mono text-sm">
+    </label>
+    <button type="submit" [disabled]="isSaving" class="sm:mt-5 px-5 py-2 rounded bg-purple-700 text-white hover:bg-purple-900 disabled:opacity-50">
+      Add
+    </button>
+    <p *ngIf="addError" role="alert" class="sm:col-span-3 text-sm text-red-700">{{ addError }}</p>
+  </form>
+
+  <p *ngIf="isLoading && categories.length === 0" class="text-sm">Loading the categories...</p>
+
+  <p *ngIf="!isLoading && !error && categories.length === 0" class="mb-4 p-3 rounded bg-yellow-100 text-yellow-900 text-sm">
+    No category yet. Add one above, or load the default list with <code>npm run seed:books</code>.
+  </p>
+
+  <div *ngIf="categories.length > 0" class="overflow-x-auto">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-purple-900 text-white text-left">
+          <th scope="col" class="p-3 w-24">Order</th>
+          <th scope="col" class="p-3">Name</th>
+          <th scope="col" class="p-3">Id</th>
+          <th scope="col" class="p-3 text-right">Books</th>
+          <th scope="col" class="p-3"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let category of categories; let i = index; let first = first; let last = last; trackBy: trackById" class="border-b">
+          <td class="p-3 whitespace-nowrap">
+            <button type="button" (click)="move(i, -1)" [disabled]="first || isSaving" [attr.aria-label]="'Move ' + category.label + ' up'"
+              class="w-8 h-8 rounded border hover:bg-purple-50 disabled:opacity-30">↑</button>
+            <button type="button" (click)="move(i, 1)" [disabled]="last || isSaving" [attr.aria-label]="'Move ' + category.label + ' down'"
+              class="w-8 h-8 rounded border hover:bg-purple-50 disabled:opacity-30 ml-1">↓</button>
+          </td>
+          <td class="p-3">
+            <form *ngIf="editingId === category.id; else showLabel" (ngSubmit)="saveEdit(category)" class="flex flex-wrap gap-2 items-center">
+              <input name="editLabel" [(ngModel)]="editLabel" [attr.maxlength]="maxLabelLength" [attr.aria-label]="'New name for ' + category.label"
+                class="flex-1 min-w-[10rem] px-2 py-1 rounded border">
+              <button type="submit" [disabled]="isSaving" class="px-3 py-1 rounded bg-purple-700 text-white disabled:opacity-50">Save</button>
+              <button type="button" (click)="cancelEdit()" class="px-3 py-1 rounded border">Cancel</button>
+              <span *ngIf="editError" role="alert" class="w-full text-xs text-red-700">{{ editError }}</span>
+            </form>
+            <ng-template #showLabel>{{ category.label }}</ng-template>
+          </td>
+          <td class="p-3 font-mono text-xs text-gray-600">{{ category.id }}</td>
+          <td class="p-3 text-right">
+            <a [routerLink]="['/']" [queryParams]="{ category: category.id }" class="text-purple-700 underline">{{ booksIn(category.id).length }}</a>
+          </td>
+          <td class="p-3 text-right whitespace-nowrap">
+            <button type="button" (click)="startEdit(category)" [disabled]="isSaving || editingId === category.id"
+              class="px-3 py-1 rounded border hover:bg-gray-50 disabled:opacity-40">Rename</button>
+            <button type="button" (click)="askDelete(category)" [disabled]="isSaving"
+              class="ml-1 px-3 py-1 rounded border text-red-700 hover:bg-red-50 disabled:opacity-40">Delete</button>
+          </td>
+        </tr>
+        <tr class="text-gray-500">
+          <td class="p-3">—</td>
+          <td class="p-3 italic">{{ other.label }} <span class="text-xs">(built-in: books without a category)</span></td>
+          <td class="p-3 font-mono text-xs">{{ other.id }}</td>
+          <td class="p-3 text-right">{{ booksIn(other.id).length }}</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Delete confirmation -->
+<div *ngIf="deleting as category" class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+  <form (ngSubmit)="confirmDelete()" class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl space-y-4">
+    <h2 id="delete-title" class="font-semibold text-lg">Delete "{{ category.label }}"?</h2>
+    <ng-container *ngIf="booksIn(category.id).length as count; else noBooks">
+      <p class="text-sm">{{ count }} book(s) use this category. Move them to:</p>
+      <select name="moveTo" [(ngModel)]="moveTo" class="w-full px-3 py-2 rounded border bg-white">
+        <option *ngFor="let c of moveTargets" [value]="c.id">{{ c.label }}</option>
+        <option [value]="other.id">{{ other.label }}</option>
+      </select>
+    </ng-container>
+    <ng-template #noBooks><p class="text-sm">No book uses this category.</p></ng-template>
+    <div class="flex justify-end gap-2">
+      <button type="button" (click)="deleting = null" [disabled]="isSaving" class="px-4 py-2 rounded border">Cancel</button>
+      <button type="submit" [disabled]="isSaving" class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50">
+        {{ isSaving ? 'Deleting...' : 'Delete' }}
+      </button>
+    </div>
+  </form>
+</div>
