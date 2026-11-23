@@ -5,11 +5,11 @@ export interface Book {
   author: string;
   image: string;
   price: number;
-  /** e.g. programming, literature, philosophy, cooking. */
+  /** Id of a document in the `categories` collection (see data/categories.json). */
   category?: string;
+  /** Copies available; undefined means "not tracked" (always available). */
+  stock?: number;
   isbn?: string;
   /** Year of first publication (negative for BCE). */
   year?: number;
-  /** Copies in stock (inventory files only; not used by the app yet). */
-  stock?: number;
 }

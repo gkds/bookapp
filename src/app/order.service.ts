@@ -12,7 +12,14 @@ import {
 } from 'firebase/firestore';
 import { CartServiceService } from './cart-service.service';
 import { auth, db } from './firebase';
-import { Order } from './types/order';
+import { shippingPrice } from './checkout/shipping';
+import { Order, PaymentInfo, ShippingAddress, ShippingMethod } from './types/order';
+
+export interface CheckoutDetails {
+  shipping: ShippingAddress;
+  shippingMethod: ShippingMethod;
+  payment: PaymentInfo;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -24,10 +31,10 @@ export class OrderService {
   constructor(private cartService: CartServiceService) {}
 
   /**
-   * Saves the current cart as an order in `orders/{id}` and empties the
+   * Saves the current cart as a paid order in `orders/{id}` and empties the
    * stored cart in the same atomic write. Returns the saved order.
    */
-  async placeOrder(): Promise<Order> {
+  async placeOrder(details: CheckoutDetails): Promise<Order> {
     const user = auth.currentUser;
     if (!user) throw new Error('You must be logged in to place an order.');
 
@@ -47,7 +54,12 @@ export class OrderService {
         unitPrice: item.book.price,
         quantity: item.quantity,
       })),
-      total: this.cartService.total(),
+      subtotal: this.cartService.total(),
+      shippingMethod: details.shippingMethod,
+      shippingCost: shippingPrice(details.shippingMethod),
+      shipping: { ...details.shipping },
+      payment: { ...details.payment },
+      total: this.totalWithShipping(details.shippingMethod),
     };
 
     const batch = writeBatch(db);
@@ -61,6 +73,11 @@ export class OrderService {
 
     this.cartService.clearLocal();
     return order;
+  }
+
+  /** Amount to pay for the current cart with this delivery method. */
+  totalWithShipping(method: ShippingMethod): number {
+    return Math.round((this.cartService.total() + shippingPrice(method)) * 100) / 100;
   }
 
   /** Reads one of the current user's orders; null if missing or not theirs. */
@@ -115,8 +132,27 @@ export class OrderService {
     doc.text(order.customerName || '-', 14, 56);
     doc.text(order.customerEmail || '-', 14, 62);
 
+    if (order.shipping) {
+      const a = order.shipping;
+      doc.text('Delivered to:', 110, 50);
+      [a.fullName, a.address, `${a.postcode} ${a.city}`, a.country].forEach((line, i) => doc.text(line, 110, 56 + i * 6));
+    }
+    let y = order.shipping ? 82 : 72;
+    if (order.payment) {
+      doc.text(
+        `Paid by ${order.payment.brand} ending ${order.payment.last4} — transaction ${order.payment.transactionId}`,
+        14,
+        y
+      );
+      y += 8;
+    }
+
+    const shippingRow = order.shippingCost !== undefined
+      ? [['', '', '', 'Subtotal', price(order.subtotal ?? order.total)], ['', '', '', 'Delivery', order.shippingCost ? price(order.shippingCost) : 'Free']]
+      : [];
+
     autoTable(doc, {
-      startY: 72,
+      startY: y,
       head: [['Book', 'Author', 'Unit price', 'Qty', 'Subtotal']],
       body: order.lines.map((line) => [
         line.name,
@@ -125,7 +161,7 @@ export class OrderService {
         String(line.quantity),
         price(line.unitPrice * line.quantity),
       ]),
-      foot: [['', '', '', 'Total', price(order.total)]],
+      foot: [...shippingRow, ['', '', '', 'Total', price(order.total)]],
       headStyles: { fillColor: [88, 28, 135] },
       footStyles: { fillColor: [243, 232, 255], textColor: 20, fontStyle: 'bold' },
       columnStyles: {

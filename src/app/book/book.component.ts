@@ -1,28 +1,37 @@
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Book } from './../types/book';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';;
+import { CategoryService } from '../category.service';
 
+/** At or below this stock, the card shows "Only N left". */
+const LOW_STOCK = 3;
 
 @Component({
   selector: 'app-book',
   templateUrl: './book.component.html',
-  styleUrls: ['./book.component.css']
+  styleUrls: ['./book.component.css'],
 })
-export class BookComponent implements OnInit {
-
-  @Input() book : Book = {} as Book
-  @Output() bookEmitter = new EventEmitter<Book>()
+export class BookComponent {
+  @Input() book: Book = {} as Book;
+  @Output() bookEmitter = new EventEmitter<Book>();
 
   /** Set when the cover cannot be loaded, to show a placeholder instead. */
-  imageFailed = false
+  imageFailed = false;
 
-  constructor() { }
+  constructor(private categoryService: CategoryService) {}
 
-  ngOnInit(): void {
-    
+  get category(): string {
+    return this.categoryService.labelOf(this.book.category);
   }
 
-  addToCart(){
-   this.bookEmitter.emit(this.book)
+  get isOutOfStock(): boolean {
+    return this.book.stock === 0;
   }
 
+  get isLowStock(): boolean {
+    return this.book.stock !== undefined && this.book.stock > 0 && this.book.stock <= LOW_STOCK;
+  }
+
+  addToCart(): void {
+    if (!this.isOutOfStock) this.bookEmitter.emit(this.book);
+  }
 }

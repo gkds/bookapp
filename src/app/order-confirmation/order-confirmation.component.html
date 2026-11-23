@@ -1,6 +1,7 @@
 <p *ngIf="isLoading" class="my-4 text-sm">Loading your order...</p>
 
 <div *ngIf="!isLoading && order as order; else noOrder" class="max-w-3xl m-auto">
+  <app-checkout-steps *ngIf="justPlaced" [current]="3"></app-checkout-steps>
   <div *ngIf="justPlaced; else orderHeader" class="p-4 mb-6 rounded bg-green-100 text-green-900" role="status">
     <h2 class="text-xl font-bold">Thank you for your order!</h2>
     <p class="text-sm">Order <strong>{{ order.id }}</strong> placed on {{ order.date | date: 'medium' }}.</p>
@@ -32,12 +33,35 @@
         </tr>
       </tbody>
       <tfoot>
+        <ng-container *ngIf="order.shippingCost !== undefined">
+          <tr class="bg-purple-50">
+            <td class="p-3" colspan="3">Subtotal</td>
+            <td class="p-3 text-right">{{ (order.subtotal ?? order.total) | currency: 'GBP' }}</td>
+          </tr>
+          <tr class="bg-purple-50">
+            <td class="p-3" colspan="3">Delivery ({{ order.shippingMethod === 'express' ? 'express' : 'standard' }})</td>
+            <td class="p-3 text-right">{{ order.shippingCost ? (order.shippingCost | currency: 'GBP') : 'Free' }}</td>
+          </tr>
+        </ng-container>
         <tr class="bg-purple-100 font-bold">
           <td class="p-3" colspan="3">Total</td>
           <td class="p-3 text-right">{{ order.total | currency: 'GBP' }}</td>
         </tr>
       </tfoot>
     </table>
+  </div>
+
+  <div *ngIf="order.shipping || order.payment" class="mt-6 grid gap-4 sm:grid-cols-2 text-sm">
+    <div *ngIf="order.shipping as a" class="p-4 rounded border bg-white">
+      <h3 class="font-semibold mb-1">Delivery address</h3>
+      <p>{{ a.fullName }}<br>{{ a.address }}<br>{{ a.postcode }} {{ a.city }}<br>{{ a.country }}<br>{{ a.phone }}</p>
+    </div>
+    <div *ngIf="order.payment as p" class="p-4 rounded border bg-white">
+      <h3 class="font-semibold mb-1">Payment</h3>
+      <p>{{ p.brand }} ending in {{ p.last4 }}</p>
+      <p class="text-green-700 font-medium">Paid {{ p.paidAt | date: 'medium' }}</p>
+      <p class="text-xs text-gray-500 break-all">Transaction {{ p.transactionId }}</p>
+    </div>
   </div>
 
   <div *ngIf="error" role="alert" class="mt-4 p-2 bg-red-300 text-red-800 rounded">{{ error }}</div>

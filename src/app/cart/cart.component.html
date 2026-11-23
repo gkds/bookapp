@@ -1,3 +1,5 @@
+<app-checkout-steps [current]="0"></app-checkout-steps>
+
 <h2 class="text-xl mb-4">Your cart</h2>
 
 <div *ngIf="syncError() as error" role="alert" class="mb-4 p-2 bg-yellow-100 text-yellow-900 rounded">
@@ -28,7 +30,7 @@
                 [attr.aria-label]="'Decrease quantity of ' + item.book.name"
                 class="w-8 h-8 rounded border bg-purple-100 hover:bg-purple-300 disabled:opacity-40 disabled:cursor-not-allowed">−</button>
               <span class="w-8 text-center" aria-live="polite">{{ item.quantity }}</span>
-              <button type="button" (click)="increment(item.book)" [disabled]="item.quantity >= maxQuantity"
+              <button type="button" (click)="increment(item.book)" [disabled]="item.quantity >= maxQuantity(item.book)"
                 [attr.aria-label]="'Increase quantity of ' + item.book.name"
                 class="w-8 h-8 rounded border bg-purple-100 hover:bg-purple-300 disabled:opacity-40 disabled:cursor-not-allowed">+</button>
             </div>
@@ -49,18 +51,15 @@
     </table>
   </div>
 
-  <div *ngIf="orderError" role="alert" class="mt-4 p-2 bg-red-300 text-red-800 rounded">
-    {{ orderError }}
-  </div>
-
-  <div class="mt-6 flex justify-end">
-    <button (click)="placeOrder()" [disabled]="isPlacingOrder"
-      class="px-6 py-3 bg-purple-700 text-white rounded hover:bg-purple-900 disabled:opacity-50">
-      {{ isPlacingOrder ? 'Placing order...' : 'Place order' }}
-    </button>
+  <div class="mt-6 flex flex-wrap justify-between items-center gap-4">
+    <a routerLink="" class="text-purple-700 underline">Continue shopping</a>
+    <a routerLink="/checkout"
+      class="px-6 py-3 bg-purple-700 text-white rounded hover:bg-purple-900">
+      Proceed to checkout
+    </a>
   </div>
 </div>
 
 <ng-template #emptyCart>
-  <p class="my-4 text-sm">Your cart is empty.</p>
+  <p class="my-4 text-sm">Your cart is empty. <a routerLink="" class="text-purple-700 underline">Browse the catalog</a></p>
 </ng-template>

@@ -1,18 +1,20 @@
-// Loads a catalog file (data/books.json by default) into the Firestore
-// `books` collection. Choose another file with --file=<path>.
+// Loads data/categories.json and a catalog file (data/books.json by default)
+// into the Firestore `categories` and `books` collections.
+// Choose another catalog file with --file=<path>.
 //
-//   npm run seed:emulators     -> data/books.json into the local emulator (must be running)
-//   npm run seed:books         -> data/books.json into the real project
-//   npm run seed:inventory     -> data/inventory.json into the real project
-//   npm run seed:inventory:emulators
+//   npm run seed:emulators             -> data/books.json into the local emulator (must be running)
+//   npm run seed:books                 -> data/books.json into the real project
+//   npm run seed:inventory             -> data/inventory.json into the real project
+//   npm run seed:inventory:emulators   -> data/inventory.json into the local emulator
 //
 // Writing to the real Firebase project needs Google credentials:
 // `gcloud auth application-default login`, or
 // GOOGLE_APPLICATION_CREDENTIALS=<path to a service-account key>.
 //
 // Re-running is safe: each book is written under its own id, so existing
-// books are updated, not duplicated. Books removed from the JSON file are
-// not deleted from Firestore.
+// books are updated, not duplicated. Books and categories removed from the JSON
+// files are not deleted from Firestore. Categories changed on /admin/categories
+// are overwritten by the JSON file for the ids it contains.
 import { readFileSync } from 'node:fs';
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -27,12 +29,19 @@ const fileArg = process.argv.find((arg) => arg.startsWith('--file='));
 const file = fileArg ? fileArg.slice('--file='.length) : new URL('../data/books.json', import.meta.url);
 const books = JSON.parse(readFileSync(file));
 
+const categories = JSON.parse(readFileSync(new URL('../data/categories.json', import.meta.url)));
+const CATEGORY_IDS = new Set([...categories.map((c) => c.id), 'other']);
+
+const categoryProblems = categories.flatMap((c, i) => {
+  const errors = [];
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(c.id ?? '') || c.id === 'other') errors.push('id must be a lowercase slug other than "other"');
+  if (typeof c.label !== 'string' || !c.label) errors.push('label is required');
+  if (!Number.isInteger(c.order)) errors.push('order must be a whole number');
+  return errors.map((e) => `category #${i + 1} (${c.id ?? '?'}): ${e}`);
+});
+
 const ids = books.map((book) => book.id);
-const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
-if (duplicates.length > 0) {
-  console.error(`Duplicate ids: ${[...new Set(duplicates)].join(', ')}`);
-  process.exit(1);
-}
+const duplicateIds = [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))];
 
 const problems = books.flatMap((book, i) => {
   const errors = [];
@@ -41,12 +50,18 @@ const problems = books.flatMap((book, i) => {
   if (typeof book.author !== 'string' || !book.author) errors.push('author is required');
   if (typeof book.image !== 'string' || !book.image.startsWith('https://')) errors.push('image must be an https URL');
   if (typeof book.price !== 'number' || book.price < 0) errors.push('price must be a positive number');
-  if (book.category !== undefined && !/^[a-z-]+$/.test(book.category)) errors.push('category must be a lowercase word');
+  if (!CATEGORY_IDS.has(book.category)) errors.push(`category must be one of: ${[...CATEGORY_IDS].join(', ')}`);
   if (book.stock !== undefined && !(Number.isInteger(book.stock) && book.stock >= 0)) errors.push('stock must be a whole number >= 0');
   return errors.map((e) => `book #${i + 1} (${book.id ?? '?'}): ${e}`);
 });
-if (problems.length > 0) {
-  console.error(problems.join('\n'));
+
+const allProblems = [
+  ...categoryProblems,
+  ...(duplicateIds.length > 0 ? [`duplicate book ids: ${duplicateIds.join(', ')}`] : []),
+  ...problems,
+];
+if (allProblems.length > 0) {
+  console.error(allProblems.join('\n'));
   process.exit(1);
 }
 
@@ -54,9 +69,15 @@ initializeApp({ projectId });
 const db = getFirestore();
 
 const batch = db.batch();
+for (const { id, ...category } of categories) {
+  batch.set(db.collection('categories').doc(id), category);
+}
 for (const { id, ...book } of books) {
   batch.set(db.collection('books').doc(id), book);
 }
 await batch.commit();
 
-console.log(`${books.length} books from ${fileArg ? file : 'data/books.json'} written to ${useEmulator ? 'the Firestore emulator' : `project ${projectId}`}.`);
+console.log(
+  `${categories.length} categories and ${books.length} books from ${fileArg ? file : 'data/books.json'} ` +
+    `written to ${useEmulator ? 'the Firestore emulator' : `project ${projectId}`}.`
+);

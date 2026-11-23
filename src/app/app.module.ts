@@ -10,6 +10,10 @@ import { BookComponent } from './book/book.component';
 import { CartComponent } from './cart/cart.component';
 import { OrderConfirmationComponent } from './order-confirmation/order-confirmation.component';
 import { OrdersComponent } from './orders/orders.component';
+import { CheckoutComponent } from './checkout/checkout.component';
+import { CheckoutStepsComponent } from './checkout/checkout-steps.component';
+import { InventoryComponent } from './inventory/inventory.component';
+import { CategoriesComponent } from './categories/categories.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +22,11 @@ import { OrdersComponent } from './orders/orders.component';
     BookComponent,
     CartComponent,
     OrderConfirmationComponent,
-    OrdersComponent
+    OrdersComponent,
+    CheckoutComponent,
+    CheckoutStepsComponent,
+    InventoryComponent,
+    CategoriesComponent
   ],
   imports: [
     BrowserModule,

@@ -37,13 +37,19 @@ export class CartServiceService {
     return doc(db, 'carts', uid);
   }
 
+  /** Highest quantity of this book the cart accepts: the stock, capped at MAX_QUANTITY. */
+  static maxQuantity(book: Book): number {
+    return book.stock === undefined ? MAX_QUANTITY : Math.min(book.stock, MAX_QUANTITY);
+  }
+
   /** Adds one copy of the book, grouping copies of the same book on one line. */
   addToCart(book: Book): void {
     const item = this.findItem(this.items, book);
     if (item) {
-      if (item.quantity >= MAX_QUANTITY) return;
+      if (item.quantity >= CartServiceService.maxQuantity(book)) return;
       item.quantity++;
     } else {
+      if (CartServiceService.maxQuantity(book) < 1) return;
       this.items = [...this.items, { book, quantity: 1 }];
     }
     this.save();

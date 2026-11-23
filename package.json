@@ -12,6 +12,8 @@
     "seed:emulators": "node scripts/seed-books.mjs --emulator",
     "seed:inventory": "node scripts/seed-books.mjs --file=data/inventory.json",
     "seed:inventory:emulators": "node scripts/seed-books.mjs --emulator --file=data/inventory.json",
+    "set-admin": "node scripts/set-admin.mjs",
+    "set-admin:emulators": "node scripts/set-admin.mjs --emulator",
     "build": "ng build",
     "test": "ng test",
     "e2e": "ng e2e"

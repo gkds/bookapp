@@ -4,12 +4,13 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  getIdTokenResult,
   signOut,
   updateProfile,
   User,
 } from 'firebase/auth';
-import { Observable, ReplaySubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { from, Observable, of, ReplaySubject } from 'rxjs';
+import { map, shareReplay, switchMap } from 'rxjs/operators';
 import { auth } from '../firebase';
 import { LoginForm } from '../types/loginform';
 import { RegisterForm } from '../types/registerForm';
@@ -41,6 +42,18 @@ export class AuthService {
   private readonly userSubject = new ReplaySubject<User | null>(1);
   readonly user$: Observable<User | null> = this.userSubject.asObservable();
   readonly isAuthenticated$: Observable<boolean> = this.user$.pipe(map((user) => !!user));
+  /**
+   * True when the user holds the `admin` custom claim (see scripts/set-admin.mjs).
+   * The Firestore rules enforce it too: this only decides what is shown.
+   */
+  readonly isAdmin$: Observable<boolean> = this.user$.pipe(
+    switchMap((user) =>
+      user
+        ? from(getIdTokenResult(user).then((token) => token.claims['admin'] === true).catch(() => false))
+        : of(false)
+    ),
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
 
   isLoading = false;
   errorMessage: string | null = null;
