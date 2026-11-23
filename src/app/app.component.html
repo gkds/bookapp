@@ -3,9 +3,10 @@
     <img src="assets/logo.svg" alt="GDS BOOK STORE" class="h-12 w-auto">
   </a>
   <div>
-    <a class="mx-4" routerLink="cart">My Cart</a>
+    <a class="mx-4" routerLink="cart">My Cart<span *ngIf="cartCount() > 0" class="ml-1 px-2 rounded-full bg-yellow-500 text-xs font-bold">{{ cartCount() }}</span></a>
     <ng-container *ngIf="user$ | async as user; else loggedOut">
       <a class="mx-4" routerLink="/orders">My orders</a>
+      <a *ngIf="isAdmin$ | async" class="mx-4 px-2 py-1 rounded bg-white/10 hover:bg-white/20" routerLink="/admin/inventory">Inventory</a>
       Hello {{ user.displayName }}
       <ng-container *ngIf="user.metadata?.lastSignInTime as lastLogin">
         Last login: {{ lastLogin }}

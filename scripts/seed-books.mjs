@@ -20,6 +20,12 @@ if (useEmulator) {
 const projectId = JSON.parse(readFileSync(new URL('../.firebaserc', import.meta.url))).projects.default;
 const books = JSON.parse(readFileSync(new URL('../data/books.json', import.meta.url)));
 
+// Keep in sync with src/app/types/category.ts.
+const CATEGORY_IDS = new Set([
+  'software-craftsmanship', 'architecture-design', 'programming-languages', 'testing-qa', 'algorithms-cs',
+  'web-development', 'data-ai', 'devops-cloud', 'management-agile', 'manga-comics', 'other',
+]);
+
 const problems = books.flatMap((book, i) => {
   const errors = [];
   if (!/^[a-z0-9-]+$/.test(book.id ?? '')) errors.push('id must be a lowercase slug');
@@ -27,6 +33,8 @@ const problems = books.flatMap((book, i) => {
   if (typeof book.author !== 'string' || !book.author) errors.push('author is required');
   if (typeof book.image !== 'string' || !book.image.startsWith('https://')) errors.push('image must be an https URL');
   if (typeof book.price !== 'number' || book.price < 0) errors.push('price must be a positive number');
+  if (!CATEGORY_IDS.has(book.category)) errors.push(`category must be one of: ${[...CATEGORY_IDS].join(', ')}`);
+  if (book.stock !== undefined && !(Number.isInteger(book.stock) && book.stock >= 0)) errors.push('stock must be a whole number >= 0');
   return errors.map((e) => `book #${i + 1} (${book.id ?? '?'}): ${e}`);
 });
 if (problems.length > 0) {

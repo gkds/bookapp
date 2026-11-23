@@ -4,6 +4,8 @@
     "name": "Clean Code",
     "author": "Robert C. Martin",
     "price": 50,
+    "category": "software-craftsmanship",
+    "stock": 10,
     "image": "https://images2.medimops.eu/product/e5315c/M00132350882-large.jpg",
     "isbn": "9780132350884",
     "year": 2008
@@ -13,6 +15,8 @@
     "name": "ISTQB Foundation Sample Exam Questions Certified Tester Foundation Level (CTFL) 2018 Syllabus",
     "author": "Chavi Raj Dosaj",
     "price": 25,
+    "category": "testing-qa",
+    "stock": 10,
     "image": "https://libris.to/media/jacket/26116152t.jpg"
   },
   {
@@ -20,6 +24,8 @@
     "name": "Test Automation Fundamentals",
     "author": "Thomas Steirer",
     "price": 48.5,
+    "category": "testing-qa",
+    "stock": 10,
     "image": "https://libris.to/media/jacket/38923017t.jpg"
   },
   {
@@ -27,6 +33,8 @@
     "name": "Goodnight Punpun, Vol. 3",
     "author": "Inio Asano",
     "price": 23.62,
+    "category": "manga-comics",
+    "stock": 10,
     "image": "https://libris.to/media/jacket/10044978t.jpg"
   },
   {
@@ -34,6 +42,8 @@
     "name": "The Pragmatic Programmer (20th Anniversary Edition)",
     "author": "David Thomas, Andrew Hunt",
     "price": 39.99,
+    "category": "software-craftsmanship",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9780135957059-L.jpg?default=false",
     "isbn": "9780135957059",
     "year": 2019
@@ -43,6 +53,8 @@
     "name": "Refactoring (2nd Edition)",
     "author": "Martin Fowler",
     "price": 44.99,
+    "category": "software-craftsmanship",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9780134757599-L.jpg?default=false",
     "isbn": "9780134757599",
     "year": 2018
@@ -52,6 +64,8 @@
     "name": "Design Patterns: Elements of Reusable Object-Oriented Software",
     "author": "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides",
     "price": 42.5,
+    "category": "architecture-design",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9780201633610-L.jpg?default=false",
     "isbn": "9780201633610",
     "year": 1994
@@ -61,6 +75,8 @@
     "name": "Code Complete (2nd Edition)",
     "author": "Steve McConnell",
     "price": 38.99,
+    "category": "software-craftsmanship",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9780735619678-L.jpg?default=false",
     "isbn": "9780735619678",
     "year": 2004
@@ -70,6 +86,8 @@
     "name": "The Mythical Man-Month (Anniversary Edition)",
     "author": "Frederick P. Brooks Jr.",
     "price": 29.99,
+    "category": "management-agile",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9780201835953-L.jpg?default=false",
     "isbn": "9780201835953",
     "year": 1995
@@ -79,6 +97,8 @@
     "name": "Clean Architecture",
     "author": "Robert C. Martin",
     "price": 32.99,
+    "category": "architecture-design",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9780134494166-L.jpg?default=false",
     "isbn": "9780134494166",
     "year": 2017
@@ -88,6 +108,8 @@
     "name": "Domain-Driven Design",
     "author": "Eric Evans",
     "price": 49.99,
+    "category": "architecture-design",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9780321125217-L.jpg?default=false",
     "isbn": "9780321125217",
     "year": 2003
@@ -97,6 +119,8 @@
     "name": "Working Effectively with Legacy Code",
     "author": "Michael Feathers",
     "price": 41.99,
+    "category": "software-craftsmanship",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9780131177055-L.jpg?default=false",
     "isbn": "9780131177055",
     "year": 2004
@@ -106,6 +130,8 @@
     "name": "Test Driven Development: By Example",
     "author": "Kent Beck",
     "price": 34.99,
+    "category": "testing-qa",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9780321146533-L.jpg?default=false",
     "isbn": "9780321146533",
     "year": 2002
@@ -115,6 +141,8 @@
     "name": "Designing Data-Intensive Applications",
     "author": "Martin Kleppmann",
     "price": 45.99,
+    "category": "architecture-design",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9781449373320-L.jpg?default=false",
     "isbn": "9781449373320",
     "year": 2017
@@ -124,6 +152,8 @@
     "name": "JavaScript: The Good Parts",
     "author": "Douglas Crockford",
     "price": 22.99,
+    "category": "programming-languages",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9780596517748-L.jpg?default=false",
     "isbn": "9780596517748",
     "year": 2008
@@ -133,6 +163,8 @@
     "name": "Effective Java (3rd Edition)",
     "author": "Joshua Bloch",
     "price": 39.5,
+    "category": "programming-languages",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9780134685991-L.jpg?default=false",
     "isbn": "9780134685991",
     "year": 2017
@@ -142,6 +174,8 @@
     "name": "Introduction to Algorithms (3rd Edition)",
     "author": "Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein",
     "price": 74.99,
+    "category": "algorithms-cs",
+    "stock": 10,
     "image": "https://covers.openlibrary.org/b/isbn/9780262033848-L.jpg?default=false",
     "isbn": "9780262033848",
     "year": 2009

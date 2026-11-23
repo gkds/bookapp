@@ -1,5 +1,44 @@
 <section class="max-w-6xl mx-auto">
-  <h2 class="text-2xl font-semibold text-center my-6">Programming books catalog</h2>
+  <!-- Search form -->
+  <form role="search" (ngSubmit)="search()"
+    class="mt-2 mb-4 p-4 rounded-xl bg-purple-50 border border-purple-100 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_17rem_11rem_auto] items-end">
+    <label class="block">
+      <span class="block text-xs font-medium text-purple-900 mb-1">Search</span>
+      <input type="search" name="q" [(ngModel)]="query" placeholder="Title, author or ISBN"
+        class="w-full px-3 py-2 rounded border bg-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+    </label>
+    <label class="block">
+      <span class="block text-xs font-medium text-purple-900 mb-1">Category</span>
+      <select name="category" [(ngModel)]="category" (ngModelChange)="search()"
+        class="w-full px-3 py-2 rounded border bg-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+        <option value="">All categories</option>
+        <option *ngFor="let c of categoryCounts" [value]="c.category.id">{{ c.category.label }} ({{ c.count }})</option>
+      </select>
+    </label>
+    <label class="block">
+      <span class="block text-xs font-medium text-purple-900 mb-1">Sort by</span>
+      <select name="sort" [(ngModel)]="sort" (ngModelChange)="search()"
+        class="w-full px-3 py-2 rounded border bg-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+        <option value="title">Title A–Z</option>
+        <option value="price-asc">Price: low to high</option>
+        <option value="price-desc">Price: high to low</option>
+        <option value="newest">Newest first</option>
+      </select>
+    </label>
+    <button type="submit" class="px-5 py-2 rounded bg-purple-700 text-white hover:bg-purple-900">Search</button>
+  </form>
+
+  <!-- Category chips -->
+  <div *ngIf="categoryCounts.length > 0" class="flex flex-wrap gap-2 mb-6" aria-label="Categories">
+    <button type="button" (click)="selectCategory('')" [attr.aria-pressed]="!category"
+      class="px-3 py-1 rounded-full border text-sm"
+      [ngClass]="!category ? 'bg-purple-700 text-white border-purple-700' : 'bg-white hover:bg-purple-50'">All</button>
+    <button *ngFor="let c of categoryCounts" type="button" (click)="selectCategory(c.category.id)"
+      [attr.aria-pressed]="category === c.category.id" class="px-3 py-1 rounded-full border text-sm"
+      [ngClass]="category === c.category.id ? 'bg-purple-700 text-white border-purple-700' : 'bg-white hover:bg-purple-50'">
+      {{ c.category.label }} <span class="opacity-70">{{ c.count }}</span>
+    </button>
+  </div>
 
   <div *ngIf="error" role="alert" class="mb-4 p-3 bg-red-300 text-red-800 rounded flex items-center justify-between gap-4">
     <span>{{ error }}</span>
@@ -17,11 +56,24 @@
     </li>
   </ul>
 
-  <ul *ngIf="!isLoading && catalog.length > 0" class="grid gap-4 sm:gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-    <li *ngFor="let book of catalog; trackBy: trackById">
-      <app-book class="block h-full" [book]="book" (bookEmitter)="addToCart($event)"></app-book>
-    </li>
-  </ul>
+  <ng-container *ngIf="!isLoading && !error && catalog.length > 0">
+    <p class="mb-3 text-sm text-gray-600" aria-live="polite">
+      {{ results.length }} {{ results.length === 1 ? 'book' : 'books' }}
+      <ng-container *ngIf="hasFilters">
+        found · <button type="button" (click)="reset()" class="text-purple-700 underline">Clear search</button>
+      </ng-container>
+    </p>
+
+    <ul *ngIf="results.length > 0" class="grid gap-4 sm:gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <li *ngFor="let book of results; trackBy: trackById">
+        <app-book class="block h-full" [book]="book" (bookEmitter)="addToCart($event)"></app-book>
+      </li>
+    </ul>
+
+    <p *ngIf="results.length === 0" class="my-8 text-center text-sm text-gray-600">
+      No book matches your search. <button type="button" (click)="reset()" class="text-purple-700 underline">See all books</button>
+    </p>
+  </ng-container>
 
   <p *ngIf="!isLoading && !error && catalog.length === 0" class="my-8 text-center text-sm text-gray-600">
     No books in the catalog yet.

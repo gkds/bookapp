@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { CartItem, CartServiceService, MAX_QUANTITY } from '../cart-service.service';
-import { OrderService } from '../order.service';
+import { CartItem, CartServiceService } from '../cart-service.service';
 import { Book } from '../types/book';
 
 @Component({
@@ -10,15 +8,11 @@ import { Book } from '../types/book';
   styleUrls: ['./cart.component.css'],
 })
 export class CartComponent {
-  readonly maxQuantity = MAX_QUANTITY;
-  isPlacingOrder = false;
-  orderError: string | null = null;
+  constructor(private cartService: CartServiceService) {}
 
-  constructor(
-    private cartService: CartServiceService,
-    private orderService: OrderService,
-    private router: Router
-  ) {}
+  maxQuantity(book: Book): number {
+    return CartServiceService.maxQuantity(book);
+  }
 
   increment(book: Book): void {
     this.cartService.addToCart(book);
@@ -42,20 +36,5 @@ export class CartComponent {
 
   syncError(): string | null {
     return this.cartService.syncError;
-  }
-
-  async placeOrder(): Promise<void> {
-    if (this.isPlacingOrder) return;
-
-    this.isPlacingOrder = true;
-    this.orderError = null;
-    try {
-      const order = await this.orderService.placeOrder();
-      await this.router.navigate(['/order-confirmation', order.id]);
-    } catch {
-      this.orderError = 'Your order could not be placed. Please try again.';
-    } finally {
-      this.isPlacingOrder = false;
-    }
   }
 }

@@ -31,6 +31,53 @@ npm run seed:emulators    # load data/books.json into the emulator (each time th
 npm run start:emulators   # app on http://localhost:4200 wired to the emulators
 ```
 
+## Features
+
+### Categories and search
+Each book has a `category` (ids and labels in `src/app/types/category.ts`):
+Software Craftsmanship, Architecture & Design, Programming Languages, Software Testing & QA,
+Algorithms & Computer Science, Web Development, Data Science & AI, DevOps & Cloud,
+Project Management & Agile, Manga & Comics (and "Other" for books without one).
+
+The home page has a search form (title, author or ISBN), a category filter, a sort order and
+category chips. The search lives in the URL (`/?q=martin&category=testing-qa&sort=price-asc`),
+so results can be bookmarked and shared.
+
+### Inventory (admin)
+`/admin/inventory` lists the catalog with its stock and imports books from a CSV file
+(comma or semicolon separated; a preview shows new books, updates and invalid lines before anything is saved).
+Columns: `id, name, author, price, category, stock, image, isbn, year` — see `data/inventory-sample.csv`
+or the "CSV template" button. A line whose `id` already exists updates that book.
+
+Admins are users with the `admin` custom claim. Give the role with:
+
+```bash
+npm run set-admin -- someone@example.com     # --revoke to remove it
+```
+
+(`npm run set-admin:emulators -- ...` for the emulators.) The user must log out and in again to get the role.
+The Firestore rules only let admins write the `books` collection.
+
+### Checkout and (fake) payment
+Cart → Delivery (address, standard or express shipping) → Payment (card form) → Confirmation.
+The payment is **simulated** (`src/app/checkout/payment.service.ts`): no money moves, card details never
+leave the browser and only the brand, last 4 digits and a transaction id are saved on the order.
+The form checks the card number (Luhn), expiry date and CVC. Test cards:
+
+| Card number | Result |
+| --- | --- |
+| 4242 4242 4242 4242 | Accepted |
+| 5555 5555 5555 4444 | Accepted (Mastercard) |
+| 3782 822463 10005 | Accepted (American Express) |
+| 4000 0027 6000 3184 | 3-D Secure screen, code `123456` |
+| 4000 0000 0000 0002 | Declined |
+| 4000 0000 0000 9995 | Insufficient funds |
+| 4000 0000 0000 0069 | Expired card |
+| 4000 0000 0000 0127 | Incorrect CVC |
+
+Use any future expiry date. To plug in a real provider (Stripe, Adyen...), replace `PaymentService`
+with one that calls your backend; card data must then go through the provider's hosted fields.
+
 ## Deploy to Firebase Hosting
 
 ```bash
